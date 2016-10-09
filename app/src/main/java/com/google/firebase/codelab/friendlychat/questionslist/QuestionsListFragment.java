@@ -25,7 +25,6 @@ public class QuestionsListFragment extends Fragment {
 
     private static final String TAG = "QuestionsListFragment";
     private static final String QUESTIONS_CHILD = "questions";
-    private static final String MESSAGE_SENT_EVENT = "message_sent";
 
     private View rootView;
 
@@ -36,9 +35,6 @@ public class QuestionsListFragment extends Fragment {
     private RecyclerView mMessageRecyclerView;
     private LinearLayoutManager mLinearLayoutManager;
     private QAAdapter mFirebaseAdapter;
-
-    private EditText mQuestionEditText;
-    private EditText mAnswerEditText;
 
     OnFragmentInteractionListener activity;
 
@@ -55,7 +51,6 @@ public class QuestionsListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         rootView = inflater.inflate(R.layout.fragment_list_questions, container, false);
-        //getActivity().setTitle(TITLE);
 
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
