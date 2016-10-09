@@ -60,29 +60,8 @@ public class QuestionsListFragment extends Fragment {
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
         mMessageRecyclerView = (RecyclerView) rootView.findViewById(R.id.messageRecyclerView);
-        mQuestionEditText = (EditText) rootView.findViewById(R.id.question_et);
-        mAnswerEditText = (EditText) rootView.findViewById(R.id.answer_et);
 
         initRecyclerView();
-
-        mAddButton = (FloatingActionButton) rootView.findViewById(R.id.add_button);
-        mAddButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AddQuestionFragment addQuestionFragment = new AddQuestionFragment();
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.content_base, addQuestionFragment);
-                fragmentTransaction.commit();
-               /* if ((mQuestionEditText.getText().toString() != "") && (mAnswerEditText.getText().toString()!= "")) {
-                    QA qa = new QA(mQuestionEditText.getText().toString(), mAnswerEditText.getText().toString());
-                    mFirebaseDatabaseReference.child(QUESTIONS_CHILD).push().setValue(qa);
-                    mQuestionEditText.setText("");
-                    mAnswerEditText.setText("");
-                    mFirebaseAnalytics.logEvent(MESSAGE_SENT_EVENT, null);
-                }*/
-            }
-        });
 
         return rootView;
     }

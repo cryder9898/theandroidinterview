@@ -6,6 +6,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -52,6 +53,7 @@ public class BaseActivity extends AppCompatActivity implements
     private DrawerLayout mDrawerLayout;
     private Toolbar mToolbar;
     private ActionBarDrawerToggle mDrawerToggle;
+    private FloatingActionButton mAddButton;
 
     private static final String TAG = "BaseActivity";
     private static final int REQUEST_INVITE = 1;
@@ -158,6 +160,27 @@ public class BaseActivity extends AppCompatActivity implements
         fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.content_base, questionsListFragment);
         fragmentTransaction.commit();
+
+        mAddButton = (FloatingActionButton) findViewById(R.id.add_button);
+        mAddButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(BaseActivity.this, AddQuestionActivity.class);
+                startActivity(intent);
+               /* AddQuestionFragment addQuestionFragment = new AddQuestionFragment();
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.content_base, addQuestionFragment);
+                fragmentTransaction.commit();*/
+               /* if ((mQuestionEditText.getText().toString() != "") && (mAnswerEditText.getText().toString()!= "")) {
+                    QA qa = new QA(mQuestionEditText.getText().toString(), mAnswerEditText.getText().toString());
+                    mFirebaseDatabaseReference.child(QUESTIONS_CHILD).push().setValue(qa);
+                    mQuestionEditText.setText("");
+                    mAnswerEditText.setText("");
+                    mFirebaseAnalytics.logEvent(MESSAGE_SENT_EVENT, null);
+                }*/
+            }
+        });
     }
 
     @Override
