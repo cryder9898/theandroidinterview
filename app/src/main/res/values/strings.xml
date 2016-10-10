@@ -19,5 +19,6 @@
     <string name="fresh_config">Fresh Config</string>
     <string name="cause_crash">Cause Crash</string>
     <string name="sign_out">Sign Out</string>
+    <string name="add_question_activity_title">Add New Question</string>
 
 </resources>

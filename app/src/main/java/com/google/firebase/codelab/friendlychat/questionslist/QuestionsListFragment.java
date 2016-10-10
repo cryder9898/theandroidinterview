@@ -4,18 +4,14 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.firebase.codelab.friendlychat.AddQuestionFragment;
 import com.google.firebase.codelab.friendlychat.model.QA;
 import com.google.firebase.codelab.friendlychat.R;
 import com.google.firebase.database.DatabaseReference;

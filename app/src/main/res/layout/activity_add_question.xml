@@ -27,15 +27,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Difficulty" />
+
     <EditText
-        android:id="@+id/enter_question_et"
+        android:id="@+id/add_question_et"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Question..." />
+        android:hint="Question..." />
+
     <EditText
-        android:id="@+id/enter_answer_et"
+        android:id="@+id/add_uri_et"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Answer..."/>
+        android:hint="Reference Link"
+        android:inputType="textUri"/>
+
+    <EditText
+        android:id="@+id/add_answer_et"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Answer..."
+        android:inputType="textMultiLine" />
 
 </LinearLayout>
