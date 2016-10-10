@@ -19,8 +19,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -35,12 +33,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.codelab.friendlychat.questionslist.QuestionsListFragment;
-import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.codelab.friendlychat.navigationdrawer.AboutFragment;
+import com.google.firebase.codelab.friendlychat.navigationdrawer.QuestionsListFragment;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
-
-import org.w3c.dom.Text;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -83,12 +79,11 @@ public class BaseActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_base);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        setSupportActionBar(mToolbar);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar,
                 R.string.drawer_open, R.string.drawer_close);
-        // Set the drawer toggle as the DrawerListener
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
 
@@ -167,18 +162,6 @@ public class BaseActivity extends AppCompatActivity implements
             public void onClick(View view) {
                 Intent intent = new Intent(BaseActivity.this, AddQuestionActivity.class);
                 startActivity(intent);
-               /* AddQuestionFragment addQuestionFragment = new AddQuestionFragment();
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.content_base, addQuestionFragment);
-                fragmentTransaction.commit();*/
-               /* if ((mQuestionEditText.getText().toString() != "") && (mAnswerEditText.getText().toString()!= "")) {
-                    QA qa = new QA(mQuestionEditText.getText().toString(), mAnswerEditText.getText().toString());
-                    mFirebaseDatabaseReference.child(QUESTIONS_CHILD).push().setValue(qa);
-                    mQuestionEditText.setText("");
-                    mAnswerEditText.setText("");
-                    mFirebaseAnalytics.logEvent(MESSAGE_SENT_EVENT, null);
-                }*/
             }
         });
     }
@@ -216,14 +199,6 @@ public class BaseActivity extends AppCompatActivity implements
         }
     }
 
-    private void sendInvitation() {
-        Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
-                .setMessage(getString(R.string.invitation_message))
-                .setCallToActionText(getString(R.string.invitation_cta))
-                .build();
-        startActivityForResult(intent, REQUEST_INVITE);
-    }
-
     @Override
     public void onBackPressed() {
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -251,7 +226,9 @@ public class BaseActivity extends AppCompatActivity implements
         int id = item.getItemId();
 
         if (id == R.id.nav_questions) {
-            // Handle the camera action
+            fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.content_base, questionsListFragment);
+            fragmentTransaction.commit();
         } else if (id == R.id.nav_quiz) {
 
         } else if (id == R.id.nav_favorites) {
@@ -259,9 +236,10 @@ public class BaseActivity extends AppCompatActivity implements
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_about) {
-
+            fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.content_base, new AboutFragment());
+            fragmentTransaction.commit();
         }
-
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -313,6 +291,14 @@ public class BaseActivity extends AppCompatActivity implements
                         Log.w(TAG, "Error fetching config: " + e.getMessage());
                     }
                 });
+    }
+
+    private void sendInvitation() {
+        Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
+                .setMessage(getString(R.string.invitation_message))
+                .setCallToActionText(getString(R.string.invitation_cta))
+                .build();
+        startActivityForResult(intent, REQUEST_INVITE);
     }
 
     @Override

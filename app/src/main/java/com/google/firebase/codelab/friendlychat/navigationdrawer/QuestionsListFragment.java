@@ -1,4 +1,4 @@
-package com.google.firebase.codelab.friendlychat.questionslist;
+package com.google.firebase.codelab.friendlychat.navigationdrawer;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

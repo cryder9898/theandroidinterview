@@ -14,8 +14,8 @@
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:id="@+id/user_iv"
         android:src="@drawable/ic_account_circle_black_36dp" />
 
