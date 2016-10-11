@@ -61,7 +61,7 @@ public class QuestionsListFragment extends Fragment {
         mLinearLayoutManager = new LinearLayoutManager(getContext());
         mLinearLayoutManager.setStackFromEnd(true);
         mFirebaseAdapter = new QAAdapter(QA.class,
-                R.layout.item_message,
+                R.layout.item_question,
                 QAAdapter.QAHolder.class,
                 mFirebaseDatabaseReference.child(QUESTIONS_CHILD));
 
