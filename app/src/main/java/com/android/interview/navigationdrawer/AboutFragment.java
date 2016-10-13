@@ -1,4 +1,4 @@
-package com.google.firebase.codelab.friendlychat.navigationdrawer;
+package com.android.interview.navigationdrawer;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.firebase.codelab.friendlychat.R;
+import com.android.interview.R;
 
 public class AboutFragment extends Fragment {
 

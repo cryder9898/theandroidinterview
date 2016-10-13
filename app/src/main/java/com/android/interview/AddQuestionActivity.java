@@ -1,4 +1,4 @@
-package com.google.firebase.codelab.friendlychat;
+package com.android.interview;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,10 +8,9 @@ import android.view.MenuItem;
 import android.widget.EditText;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.firebase.codelab.friendlychat.model.QA;
+import com.android.interview.model.QA;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ServerValue;
 
 public class AddQuestionActivity extends AppCompatActivity {
 

@@ -1,4 +1,4 @@
-package com.google.firebase.codelab.friendlychat.navigationdrawer;
+package com.android.interview.navigationdrawer;
 
 import android.app.Activity;
 import android.content.Context;
@@ -6,8 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -16,10 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.android.interview.R;
+import com.android.interview.model.TestQuestions;
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.firebase.codelab.friendlychat.model.QA;
-import com.google.firebase.codelab.friendlychat.R;
-import com.google.firebase.codelab.friendlychat.model.TestQuestions;
+import com.android.interview.model.QA;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -93,6 +91,8 @@ public class QuestionsListFragment extends Fragment {
         });
 
     }
+
+
 
     @Override
     public void onDestroyView() {

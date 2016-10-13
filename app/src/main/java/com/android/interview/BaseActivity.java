@@ -1,4 +1,4 @@
-package com.google.firebase.codelab.friendlychat;
+package com.android.interview;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -22,8 +22,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
 import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.ConnectionResult;
@@ -33,10 +31,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.codelab.friendlychat.model.QA;
-import com.google.firebase.codelab.friendlychat.navigationdrawer.AboutFragment;
-import com.google.firebase.codelab.friendlychat.navigationdrawer.QuestionDetailFragment;
-import com.google.firebase.codelab.friendlychat.navigationdrawer.QuestionsListFragment;
+import com.android.interview.model.QA;
+import com.android.interview.navigationdrawer.AboutFragment;
+import com.android.interview.navigationdrawer.QuestionDetailFragment;
+import com.android.interview.navigationdrawer.QuestionsListFragment;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 
@@ -66,7 +64,6 @@ public class BaseActivity extends AppCompatActivity implements
     private FirebaseAnalytics mFirebaseAnalytics;
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
 
-    private AdView mAdView;
     private GoogleApiClient mGoogleApiClient;
 
     private String mTitle;
@@ -125,10 +122,7 @@ public class BaseActivity extends AppCompatActivity implements
                 .addApi(Auth.GOOGLE_SIGN_IN_API)
                 .build();
 
-        // Initialize and request AdMob ad.
-        mAdView = (AdView) findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+
 
         // Initialize Firebase Measurement.
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
@@ -248,29 +242,6 @@ public class BaseActivity extends AppCompatActivity implements
         return true;
     }
 
-    @Override
-    public void onPause() {
-        if (mAdView != null) {
-            mAdView.pause();
-        }
-        super.onPause();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (mAdView != null) {
-            mAdView.resume();
-        }
-    }
-
-    @Override
-    public void onDestroy() {
-        if (mAdView != null) {
-            mAdView.destroy();
-        }
-        super.onDestroy();
-    }
 
     // Fetch the config to determine the allowed length of messages.
     public void fetchConfig() {

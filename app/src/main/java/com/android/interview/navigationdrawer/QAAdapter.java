@@ -1,12 +1,13 @@
-package com.google.firebase.codelab.friendlychat.navigationdrawer;
+package com.android.interview.navigationdrawer;
 
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
+
+import com.android.interview.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.google.firebase.codelab.friendlychat.model.QA;
-import com.google.firebase.codelab.friendlychat.R;
+import com.android.interview.model.QA;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 

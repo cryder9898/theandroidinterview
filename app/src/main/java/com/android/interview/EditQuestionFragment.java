@@ -1,4 +1,4 @@
-package com.google.firebase.codelab.friendlychat;
+package com.android.interview;
 
 
 import android.support.v4.app.Fragment;

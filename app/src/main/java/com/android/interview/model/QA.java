@@ -1,4 +1,4 @@
-package com.google.firebase.codelab.friendlychat.model;
+package com.android.interview.model;
 
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.google.firebase.codelab.friendlychat">
+    package="com.android.interview">
 
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".BaseActivity"
+            android:name="com.android.interview.BaseActivity"
             android:label="@string/title_activity_base"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -22,17 +22,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SignInActivity" />
+        <activity android:name="com.android.interview.SignInActivity" />
 
         <service
-            android:name=".services.MyFirebaseMessagingService"
+            android:name="com.android.interview.services.MyFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
         <service
-            android:name=".services.MyFirebaseInstanceIdService"
+            android:name="com.android.interview.services.MyFirebaseInstanceIdService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
@@ -40,9 +40,9 @@
         </service>
 
         <activity
-            android:name=".AddQuestionActivity"
+            android:name="com.android.interview.AddQuestionActivity"
             android:theme="@style/AppTheme"
-            android:parentActivityName=".BaseActivity"></activity>
+            android:parentActivityName="com.android.interview.BaseActivity"></activity>
     </application>
 
 </manifest>

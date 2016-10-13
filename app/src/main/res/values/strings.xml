@@ -20,5 +20,8 @@
     <string name="cause_crash">Cause Crash</string>
     <string name="sign_out">Sign Out</string>
     <string name="add_question_activity_title">Add New Question</string>
+    <string name="question">Question:</string>
+    <string name="answer">Answer:</string>
+    <string name="url_reference">Url Reference:</string>
 
 </resources>
