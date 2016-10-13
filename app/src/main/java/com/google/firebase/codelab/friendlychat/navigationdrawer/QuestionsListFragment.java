@@ -1,19 +1,25 @@
 package com.google.firebase.codelab.friendlychat.navigationdrawer;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.codelab.friendlychat.model.QA;
 import com.google.firebase.codelab.friendlychat.R;
+import com.google.firebase.codelab.friendlychat.model.TestQuestions;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -21,6 +27,7 @@ public class QuestionsListFragment extends Fragment {
 
     private static final String TAG = "QuestionsListFragment";
     private static final String QUESTIONS_CHILD = "questions";
+    private static final String QUESTION_DELETED_EVENT = "question deleted";
 
     private View rootView;
 
@@ -32,15 +39,15 @@ public class QuestionsListFragment extends Fragment {
     private LinearLayoutManager mLinearLayoutManager;
     private QAAdapter mFirebaseAdapter;
 
-    OnFragmentInteractionListener activity;
+    public OnListItemClickListener activity;
 
-   /* @Override
+    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof Activity) {
-            activity = (OnFragmentInteractionListener) context;
+            activity = (OnListItemClickListener) context;
         }
-    }*/
+    }
 
     @Nullable
     @Override
@@ -53,7 +60,8 @@ public class QuestionsListFragment extends Fragment {
         mMessageRecyclerView = (RecyclerView) rootView.findViewById(R.id.messageRecyclerView);
 
         initRecyclerView();
-
+        TestQuestions tq = new TestQuestions();
+        tq.loadQuestions();
         return rootView;
     }
 
@@ -64,40 +72,34 @@ public class QuestionsListFragment extends Fragment {
                 R.layout.item_question,
                 QAAdapter.QAHolder.class,
                 mFirebaseDatabaseReference.child(QUESTIONS_CHILD));
-
-        mFirebaseAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onItemRangeInserted(int positionStart, int itemCount) {
-                super.onItemRangeInserted(positionStart, itemCount);
-                int questionCount = mFirebaseAdapter.getItemCount();
-                int lastVisiblePosition = mLinearLayoutManager.findLastCompletelyVisibleItemPosition();
-                // If the recycler view is initially being loaded or the user is at the bottom of the list, scroll
-                // to the bottom of the list to show the newly added message.
-                if (lastVisiblePosition == -1 ||
-                        (positionStart >= (questionCount - 1) && lastVisiblePosition == (positionStart - 1))) {
-                    mMessageRecyclerView.scrollToPosition(positionStart);
-                }
-            }
-        });
-
         mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
         mMessageRecyclerView.setAdapter(mFirebaseAdapter);
         mFirebaseAdapter.setOnItemClickListener(new QAAdapter.ClickListener() {
             @Override
             public void onItemClick(int position, View v) {
                 Log.d(TAG, "onItemClick position: " + position);
+                QA qa = mFirebaseAdapter.getItem(position);
+                activity.setDetails(qa);
             }
 
             @Override
             public void onItemLongClick(int position, View v) {
                 Log.d(TAG, "onItemLongClick pos = " + position);
                 mFirebaseAdapter.getRef(position).removeValue();
+                mFirebaseAnalytics.logEvent(QUESTION_DELETED_EVENT, null);
+                Toast.makeText(getContext(),"Question Deleted",Toast.LENGTH_SHORT).show();
+
             }
         });
 
     }
 
-    public interface OnFragmentInteractionListener {
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+    }
 
+    public interface OnListItemClickListener {
+        void setDetails(QA qa);
     }
 }

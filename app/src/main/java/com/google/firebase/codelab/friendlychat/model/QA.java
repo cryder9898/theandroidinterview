@@ -10,7 +10,7 @@ public class QA {
 
     private String question;
     private String answer;
-    private String uri;
+    private String url;
     private boolean favorite;
     private HashMap<String, Object> timestampLastChanged;
 
@@ -20,19 +20,19 @@ public class QA {
     public QA(String question, String answer, String uri) {
         this.question = question;
         this.answer = answer;
-        this.uri = uri;
+        this.url = uri;
         favorite = false;
         HashMap<String, Object> timestampNowObject = new HashMap<String, Object>();
         timestampNowObject.put("timestamp", ServerValue.TIMESTAMP);
         this.timestampLastChanged = timestampNowObject;
     }
 
-    public void setUri(String uri) {
-        this.uri = uri;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
-    public String getUri() {
-        return this.uri;
+    public String getUrl() {
+        return this.url;
     }
 
     public boolean getFavorite() {

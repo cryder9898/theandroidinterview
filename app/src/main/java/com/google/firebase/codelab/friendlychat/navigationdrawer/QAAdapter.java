@@ -8,6 +8,7 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.codelab.friendlychat.model.QA;
 import com.google.firebase.codelab.friendlychat.R;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -20,14 +21,19 @@ public class QAAdapter extends FirebaseRecyclerAdapter<QA, QAAdapter.QAHolder> {
         super(modelClass, modelLayout, viewHolderClass, ref);
     }
 
+    public QAAdapter(Class<QA> modelClass, int modelLayout, Class<QAHolder> viewHolderClass, Query ref) {
+        super(modelClass, modelLayout, viewHolderClass, ref);
+    }
+
     @Override
     protected void populateViewHolder(QAHolder viewHolder, QA model, int position) {
         viewHolder.question.setText(model.getQuestion());
-        SimpleDateFormat sfd = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat sfd = new SimpleDateFormat("MM-dd-yyyy");
         viewHolder.timestamp.setText(sfd.format(new Date(model.getTimestampLastChangedLong())));
     }
 
-    public static class QAHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener, View.OnClickListener {
+    public static class QAHolder extends RecyclerView.ViewHolder
+            implements View.OnLongClickListener, View.OnClickListener {
 
         private TextView question;
         private TextView timestamp;

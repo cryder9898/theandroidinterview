@@ -33,7 +33,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.codelab.friendlychat.model.QA;
 import com.google.firebase.codelab.friendlychat.navigationdrawer.AboutFragment;
+import com.google.firebase.codelab.friendlychat.navigationdrawer.QuestionDetailFragment;
 import com.google.firebase.codelab.friendlychat.navigationdrawer.QuestionsListFragment;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
@@ -44,7 +46,10 @@ import java.util.Map;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class BaseActivity extends AppCompatActivity implements
-        GoogleApiClient.OnConnectionFailedListener, NavigationView.OnNavigationItemSelectedListener {
+        GoogleApiClient.OnConnectionFailedListener, NavigationView.OnNavigationItemSelectedListener, QuestionsListFragment.OnListItemClickListener {
+
+    private static final int REQUEST_INVITE = 1;
+    private static final String ANONYMOUS = "anonymous";
 
     private DrawerLayout mDrawerLayout;
     private Toolbar mToolbar;
@@ -52,8 +57,6 @@ public class BaseActivity extends AppCompatActivity implements
     private FloatingActionButton mAddButton;
 
     private static final String TAG = "BaseActivity";
-    private static final int REQUEST_INVITE = 1;
-    public static final String ANONYMOUS = "anonymous";
     private CharSequence mUsername;
     private String mPhotoUrl;
     private SharedPreferences mSharedPreferences;
@@ -70,6 +73,7 @@ public class BaseActivity extends AppCompatActivity implements
     private String mDrawerTitle;
 
     private QuestionsListFragment questionsListFragment;
+    private QuestionDetailFragment questionDetailFragment;
     private FragmentManager fragmentManager;
     private FragmentTransaction fragmentTransaction;
 
@@ -325,6 +329,16 @@ public class BaseActivity extends AppCompatActivity implements
                 Log.d(TAG, "Failed to send invitation.");
             }
         }
+    }
+
+    @Override
+    public void setDetails(QA qa) {
+        QuestionDetailFragment qdf= new QuestionDetailFragment();
+        qdf.setObjectForView(qa);
+        fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.content_base, qdf);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 }
 
