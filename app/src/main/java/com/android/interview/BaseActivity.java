@@ -35,6 +35,7 @@ import com.android.interview.model.QA;
 import com.android.interview.navigationdrawer.AboutFragment;
 import com.android.interview.navigationdrawer.QuestionDetailFragment;
 import com.android.interview.navigationdrawer.QuestionsListFragment;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 
@@ -63,6 +64,7 @@ public class BaseActivity extends AppCompatActivity implements
     private FirebaseUser mFirebaseUser;
     private FirebaseAnalytics mFirebaseAnalytics;
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
+    private static boolean calledAlready = false;
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -96,6 +98,11 @@ public class BaseActivity extends AppCompatActivity implements
 
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         mUsername = ANONYMOUS;
+
+        if (!calledAlready) {
+            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+            calledAlready = true;
+        }
 
         // Initialize Firebase Auth
         mFirebaseAuth = FirebaseAuth.getInstance();

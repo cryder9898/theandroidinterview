@@ -58,8 +58,8 @@ public class QuestionsListFragment extends Fragment {
         mMessageRecyclerView = (RecyclerView) rootView.findViewById(R.id.messageRecyclerView);
 
         initRecyclerView();
-        TestQuestions tq = new TestQuestions();
-        tq.loadQuestions();
+        //TestQuestions tq = new TestQuestions();
+        //tq.loadQuestions();
         return rootView;
     }
 
