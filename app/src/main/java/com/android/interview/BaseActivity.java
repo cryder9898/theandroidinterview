@@ -3,6 +3,7 @@ package com.android.interview;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -11,9 +12,11 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -49,16 +52,17 @@ public class BaseActivity extends AppCompatActivity implements
 
     private static final int REQUEST_INVITE = 1;
     private static final String ANONYMOUS = "anonymous";
+    private static final String TAG = "BaseActivity";
 
     private DrawerLayout mDrawerLayout;
     private Toolbar mToolbar;
     private ActionBarDrawerToggle mDrawerToggle;
     private FloatingActionButton mAddButton;
+    private ShareActionProvider mShareActionProvider;
+    private SharedPreferences mSharedPreferences;
 
-    private static final String TAG = "BaseActivity";
     private CharSequence mUsername;
     private String mPhotoUrl;
-    private SharedPreferences mSharedPreferences;
 
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFirebaseUser;
@@ -72,7 +76,6 @@ public class BaseActivity extends AppCompatActivity implements
     private String mDrawerTitle;
 
     private QuestionsListFragment questionsListFragment;
-    private QuestionDetailFragment questionDetailFragment;
     private FragmentManager fragmentManager;
     private FragmentTransaction fragmentTransaction;
 
@@ -109,7 +112,6 @@ public class BaseActivity extends AppCompatActivity implements
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
 
         if (mFirebaseUser == null) {
-            // Not signed in, launch the Sign In activity
             startActivity(new Intent(this, SignInActivity.class));
             finish();
             return;
@@ -129,12 +131,7 @@ public class BaseActivity extends AppCompatActivity implements
                 .addApi(Auth.GOOGLE_SIGN_IN_API)
                 .build();
 
-
-
-        // Initialize Firebase Measurement.
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-
-        // Initialize Firebase Remote Config.
         mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
 
         // Define Firebase Remote Config Settings.
@@ -147,11 +144,9 @@ public class BaseActivity extends AppCompatActivity implements
         // available. Eg: if an error occurred fetching values from the server.
         Map<String, Object> defaultConfigMap = new HashMap<>();
         defaultConfigMap.put("friendly_msg_length", 10L);
-
         // Apply config settings and default values.
         mFirebaseRemoteConfig.setConfigSettings(firebaseRemoteConfigSettings);
         mFirebaseRemoteConfig.setDefaults(defaultConfigMap);
-
         // Fetch remote config.
         fetchConfig();
 
@@ -227,7 +222,6 @@ public class BaseActivity extends AppCompatActivity implements
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         if (id == R.id.nav_questions) {
@@ -239,7 +233,12 @@ public class BaseActivity extends AppCompatActivity implements
         } else if (id == R.id.nav_favorites) {
 
         } else if (id == R.id.nav_share) {
-
+            Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+            sharingIntent.setType("text/plain");
+            String shareBody = "here goes your share content body";
+            sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Android Interview");
+            sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+            startActivity(Intent.createChooser(sharingIntent, "Share using"));
         } else if (id == R.id.nav_about) {
             fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.content_base, new AboutFragment());
