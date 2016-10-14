@@ -25,14 +25,13 @@ public class QuestionsListFragment extends Fragment {
 
     private static final String TAG = "QuestionsListFragment";
     private static final String QUESTIONS_CHILD = "questions";
-    private static final String QUESTION_DELETED_EVENT = "question deleted";
-
-    private View rootView;
+    private static final String QUESTION_DELETED_EVENT = "question_deleted";
+    private static final String QUESTION_ADDED_EVENT = "question_added";
 
     private DatabaseReference mFirebaseDatabaseReference;
     private FirebaseAnalytics mFirebaseAnalytics;
 
-    private FloatingActionButton mAddButton;
+    private View rootView;
     private RecyclerView mMessageRecyclerView;
     private LinearLayoutManager mLinearLayoutManager;
     private QAAdapter mFirebaseAdapter;
@@ -58,8 +57,9 @@ public class QuestionsListFragment extends Fragment {
         mMessageRecyclerView = (RecyclerView) rootView.findViewById(R.id.messageRecyclerView);
 
         initRecyclerView();
-        //TestQuestions tq = new TestQuestions();
-        //tq.loadQuestions();
+        TestQuestions tq = new TestQuestions();
+        tq.loadQuestions();
+        mFirebaseAnalytics.logEvent(QUESTION_ADDED_EVENT, null);
         return rootView;
     }
 

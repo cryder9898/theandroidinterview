@@ -243,6 +243,7 @@ public class BaseActivity extends AppCompatActivity implements
         } else if (id == R.id.nav_about) {
             fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.content_base, new AboutFragment());
+            fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
         }
         mDrawerLayout.closeDrawer(GravityCompat.START);
