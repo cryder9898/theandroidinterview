@@ -22,5 +22,6 @@
     <string name="question">Question:</string>
     <string name="answer">Answer:</string>
     <string name="url_reference">Url Reference:</string>
+    <string name="activity_add_question_detail">Enter an awesome question so we can add it to our database!</string>
 
 </resources>

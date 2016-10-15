@@ -27,7 +27,7 @@ import org.junit.runner.RunWith;
 public class MainActivityEspressoTest {
 
     @Rule
-    public ActivityTestRule<BaseActivity> mActivityRule =
-            new ActivityTestRule<>(BaseActivity.class);
+    public ActivityTestRule<MainActivity> mActivityRule =
+            new ActivityTestRule<>(MainActivity.class);
 
 }

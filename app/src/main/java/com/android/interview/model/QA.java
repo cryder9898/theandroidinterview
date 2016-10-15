@@ -8,12 +8,16 @@ import java.util.HashMap;
 @IgnoreExtraProperties
 public class QA {
 
+    public static final String QUESTIONS = "questions";
+    public static final String PUBLISHED = "published";
+    public static final String UNDER_REVIEW = "under_review";
+
     private String question;
     private String answer;
     private String url;
     private boolean favorite;
+    private String username;
     private HashMap<String, Object> timestampLastChanged;
-
 
     public QA(){}
 
@@ -25,6 +29,14 @@ public class QA {
         HashMap<String, Object> timestampNowObject = new HashMap<String, Object>();
         timestampNowObject.put("timestamp", ServerValue.TIMESTAMP);
         this.timestampLastChanged = timestampNowObject;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public void setUrl(String url) {

@@ -35,7 +35,7 @@ public class TestQuestions {
 
     public void loadQuestions() {
         DatabaseReference fd = FirebaseDatabase.getInstance().getReference();
-        fd.child("questions").push().setValue(qa1);
-        fd.child("questions").push().setValue(qa2);
+        fd.child(QA.PUBLISHED).push().setValue(qa1);
+        fd.child(QA.PUBLISHED).push().setValue(qa2);
     }
 }

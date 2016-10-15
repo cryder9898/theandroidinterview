@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -36,6 +35,8 @@ public class QuestionsListFragment extends Fragment {
     private LinearLayoutManager mLinearLayoutManager;
     private QAAdapter mFirebaseAdapter;
 
+    private boolean isPublished = true;
+
     public OnListItemClickListener activity;
 
     @Override
@@ -49,35 +50,34 @@ public class QuestionsListFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         rootView = inflater.inflate(R.layout.fragment_list_questions, container, false);
 
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
         mMessageRecyclerView = (RecyclerView) rootView.findViewById(R.id.messageRecyclerView);
 
         initRecyclerView();
-        TestQuestions tq = new TestQuestions();
-        tq.loadQuestions();
-        mFirebaseAnalytics.logEvent(QUESTION_ADDED_EVENT, null);
+//        TestQuestions tq = new TestQuestions();
+//        tq.loadQuestions();
+        FirebaseAnalytics.getInstance(getContext()).logEvent(QUESTION_ADDED_EVENT, null);
         return rootView;
     }
 
     private void initRecyclerView() {
         mLinearLayoutManager = new LinearLayoutManager(getContext());
         mLinearLayoutManager.setStackFromEnd(true);
+
         mFirebaseAdapter = new QAAdapter(QA.class,
                 R.layout.item_question,
                 QAAdapter.QAHolder.class,
-                mFirebaseDatabaseReference.child(QUESTIONS_CHILD));
+                mFirebaseDatabaseReference.child(QA.PUBLISHED));
+
         mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
         mMessageRecyclerView.setAdapter(mFirebaseAdapter);
         mFirebaseAdapter.setOnItemClickListener(new QAAdapter.ClickListener() {
             @Override
             public void onItemClick(int position, View v) {
                 Log.d(TAG, "onItemClick position: " + position);
-                QA qa = mFirebaseAdapter.getItem(position);
-                activity.setDetails(qa);
+                activity.setDetails(mFirebaseAdapter.getItem(position));
             }
 
             @Override

@@ -14,7 +14,6 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class AddQuestionActivity extends AppCompatActivity {
 
-    private static final String QUESTIONS_CHILD = "questions";
     private static final String QUESTION_ADDED_EVENT = "question added";
 
     Toolbar toolbar;
@@ -52,11 +51,10 @@ public class AddQuestionActivity extends AppCompatActivity {
                         addAnswer.getText().toString(),
                         addUri.getText().toString());
                 DatabaseReference mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-                mFirebaseDatabaseReference.child(QUESTIONS_CHILD).push().setValue(qa);
+                mFirebaseDatabaseReference.child(QA.UNDER_REVIEW).push().setValue(qa);
                 addQuestion.setText("");
                 addAnswer.setText("");
-                FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-                mFirebaseAnalytics.logEvent(QUESTION_ADDED_EVENT, null);
+                FirebaseAnalytics.getInstance(this).logEvent(QUESTION_ADDED_EVENT, null);
                 finish();
             }
         }

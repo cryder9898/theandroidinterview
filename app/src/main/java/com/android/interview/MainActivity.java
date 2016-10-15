@@ -3,7 +3,6 @@ package com.android.interview;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -12,7 +11,6 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -24,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.android.interview.model.User;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.android.gms.auth.api.Auth;
@@ -38,6 +37,7 @@ import com.android.interview.model.QA;
 import com.android.interview.navigationdrawer.AboutFragment;
 import com.android.interview.navigationdrawer.QuestionDetailFragment;
 import com.android.interview.navigationdrawer.QuestionsListFragment;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
@@ -47,12 +47,12 @@ import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class BaseActivity extends AppCompatActivity implements
+public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener, NavigationView.OnNavigationItemSelectedListener, QuestionsListFragment.OnListItemClickListener {
 
     private static final int REQUEST_INVITE = 1;
     private static final String ANONYMOUS = "anonymous";
-    private static final String TAG = "BaseActivity";
+    private static final String TAG = "MainActivity";
 
     private DrawerLayout mDrawerLayout;
     private Toolbar mToolbar;
@@ -61,13 +61,14 @@ public class BaseActivity extends AppCompatActivity implements
     private ShareActionProvider mShareActionProvider;
     private SharedPreferences mSharedPreferences;
 
-    private CharSequence mUsername;
+    private String mUsername;
     private String mPhotoUrl;
 
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFirebaseUser;
     private FirebaseAnalytics mFirebaseAnalytics;
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
+    private DatabaseReference mFirebaseDatabase;
     private static boolean calledAlready = false;
 
     private GoogleApiClient mGoogleApiClient;
@@ -110,6 +111,7 @@ public class BaseActivity extends AppCompatActivity implements
         // Initialize Firebase Auth
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
+        mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
 
         if (mFirebaseUser == null) {
             startActivity(new Intent(this, SignInActivity.class));
@@ -117,6 +119,12 @@ public class BaseActivity extends AppCompatActivity implements
             return;
         } else {
             mUsername = mFirebaseUser.getDisplayName();
+
+           /*
+            User user = new User(mUsername, mFirebaseUser.getEmail(),mFirebaseUser.getUid());
+            mFirebaseDatabase.child(User.ADMINS).push().setValue(user);
+            */
+
             TextView usernameText = (TextView) headerView.findViewById(R.id.username_tv);
             usernameText.setText(mUsername);
             mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
@@ -160,7 +168,7 @@ public class BaseActivity extends AppCompatActivity implements
         mAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(BaseActivity.this, AddQuestionActivity.class);
+                Intent intent = new Intent(MainActivity.this, AddQuestionActivity.class);
                 startActivity(intent);
             }
         });

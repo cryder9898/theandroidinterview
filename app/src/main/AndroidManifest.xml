@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.android.interview.BaseActivity"
+            android:name="com.android.interview.MainActivity"
             android:label="@string/title_activity_base"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -42,7 +42,7 @@
         <activity
             android:name="com.android.interview.AddQuestionActivity"
             android:theme="@style/AppTheme"
-            android:parentActivityName="com.android.interview.BaseActivity"></activity>
+            android:parentActivityName="com.android.interview.MainActivity"></activity>
     </application>
 
 </manifest>
