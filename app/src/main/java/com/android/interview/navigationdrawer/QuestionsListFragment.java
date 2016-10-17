@@ -16,7 +16,6 @@ import android.widget.Toast;
 import com.android.interview.FirebaseUtils;
 import com.android.interview.MainActivity;
 import com.android.interview.R;
-import com.android.interview.model.TestQuestions;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.android.interview.model.QA;
 import com.google.firebase.database.DatabaseReference;
@@ -27,28 +26,40 @@ public class QuestionsListFragment extends Fragment {
     private static final String QUESTION_DELETED_EVENT = "question_deleted";
     private static final String QUESTION_ADDED_EVENT = "question_added";
     private static DatabaseReference adapterRef = FirebaseUtils.getPublishedQuestionsRef();
+    private String type;
 
     private FirebaseAnalytics mFirebaseAnalytics;
 
     private View rootView;
-    private RecyclerView mQuestionList;
+    private RecyclerView mRecyclerView;
     private LinearLayoutManager mLinearLayoutManager;
-    private QAAdapter mFirebaseAdapter;
+    private QAAdapter mQAAdapter;
 
-    public OnListItemClickListener activity;
+    public OnListItemClickListener mCallback;
+
+    public QuestionsListFragment(){}
+
+    public static QuestionsListFragment newInstance(boolean isPublished) {
+        QuestionsListFragment myFragment = new QuestionsListFragment();
+        Bundle args = new Bundle();
+        args.putBoolean("type", isPublished);
+        myFragment.setArguments(args);
+
+        return myFragment;
+    }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof Activity) {
-            activity = (OnListItemClickListener) context;
+            mCallback = (OnListItemClickListener) context;
         }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        activity = null;
+        mCallback = null;
     }
 
     @Nullable
@@ -60,7 +71,7 @@ public class QuestionsListFragment extends Fragment {
         } else {
             getActivity().setTitle(getString(R.string.app_name));
         }
-        mQuestionList = (RecyclerView) rootView.findViewById(R.id.messageRecyclerView);
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.messageRecyclerView);
 
         initRecyclerView();
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
@@ -72,27 +83,28 @@ public class QuestionsListFragment extends Fragment {
         mLinearLayoutManager = new LinearLayoutManager(getContext());
         mLinearLayoutManager.setStackFromEnd(true);
 
-        mFirebaseAdapter = new QAAdapter(QA.class,
+        mQAAdapter = new QAAdapter(QA.class,
                 R.layout.item_question,
                 QAAdapter.QAHolder.class,
                 adapterRef);
 
-        mQuestionList.setLayoutManager(mLinearLayoutManager);
-        mQuestionList.setAdapter(mFirebaseAdapter);
+        mRecyclerView.setLayoutManager(mLinearLayoutManager);
+        mRecyclerView.setAdapter(mQAAdapter);
 
-        TestQuestions.loadQuestions();
+        //TestQuestions.loadQuestions();
 
-        mFirebaseAdapter.setOnItemClickListener(new QAAdapter.ClickListener() {
+        mQAAdapter.setOnItemClickListener(new QAAdapter.ClickListener() {
             @Override
             public void onItemClick(int position, View v) {
-                activity.setDetails(mFirebaseAdapter.getItem(position));
+                mCallback.onQuestionSelected(mQAAdapter.getItem(position));
+                //mCallback.onQuestionSelected(position);
             }
 
             @Override
             public void onItemLongClick(int position, View v) {
-                Log.d("CHRIS",String.valueOf(MainActivity.admin));
-                if (MainActivity.admin) {
-                    mFirebaseAdapter.getRef(position).removeValue();
+                Log.d("CHRIS",String.valueOf(MainActivity.isAdmin));
+                if (MainActivity.isAdmin) {
+                    mQAAdapter.getRef(position).removeValue();
                     mFirebaseAnalytics.logEvent(QUESTION_DELETED_EVENT, null);
                     Toast.makeText(getContext(), "Question Deleted", Toast.LENGTH_SHORT).show();
                 }
@@ -115,6 +127,6 @@ public class QuestionsListFragment extends Fragment {
     }
 
     public interface OnListItemClickListener {
-        void setDetails(QA qa);
+        void onQuestionSelected(QA qa);
     }
 }

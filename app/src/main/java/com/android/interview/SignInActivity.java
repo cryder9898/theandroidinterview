@@ -63,7 +63,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
             FirebaseUser user = authResult.getUser();
             Toast.makeText(this, "Welcome " + user.getEmail(), Toast.LENGTH_SHORT).show();
 
-            // Go back to the main activity
+            // Go back to the main mCallback
             startActivity(new Intent(this, MainActivity.class));
         }
     }

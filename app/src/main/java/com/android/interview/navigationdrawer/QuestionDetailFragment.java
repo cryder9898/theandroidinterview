@@ -18,23 +18,34 @@ import java.text.SimpleDateFormat;
 
 public class QuestionDetailFragment extends Fragment {
 
+    private static final String POSITION = "position";
+
     private View rootView;
     private TextView question;
     private TextView answer;
     private TextView url;
     private TextView timestamp;
-    private QA mQA;
+    private static QA mQA;
 
     private AdView mAdView;
 
+    public QuestionDetailFragment (){}
+
+    public static QuestionDetailFragment newInstance(int position) {
+        QuestionDetailFragment myFragment = new QuestionDetailFragment();
+        Bundle args = new Bundle();
+        args.putInt(QuestionDetailFragment.POSITION, position);
+        myFragment.setArguments(args);
+
+        return myFragment;
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         rootView = inflater.inflate(R.layout.fragment_detail_question, container, false);
 
-        // Initialize and request AdMob ad.
+        //init AdMob
         mAdView = (AdView) rootView.findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
@@ -43,8 +54,8 @@ public class QuestionDetailFragment extends Fragment {
         answer = (TextView) rootView.findViewById(R.id.answer_detail_tv);
         url = (TextView) rootView.findViewById(R.id.url_detail_tv);
         timestamp = (TextView) rootView.findViewById(R.id.timestamp_detail_tv);
-        answer.setText(mQA.getAnswer());
         question.setText(mQA.getQuestion());
+        answer.setText(mQA.getAnswer());
         url.setText(mQA.getUrl());
         SimpleDateFormat sfd = new SimpleDateFormat("MM-dd-yyyy");
         timestamp.setText(sfd.format(new Date(mQA.getTimestampLastChangedLong())));

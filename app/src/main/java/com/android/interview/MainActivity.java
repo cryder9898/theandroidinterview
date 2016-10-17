@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final int REQUEST_INVITE = 1;
     private static final String ANONYMOUS = "anonymous";
     private static final String TAG = "MainActivity";
-    public static boolean admin;
+    public static boolean isAdmin;
 
     private DrawerLayout mDrawerLayout;
     private Toolbar mToolbar;
@@ -70,15 +70,21 @@ public class MainActivity extends AppCompatActivity implements
     private String mTitle;
     private String mDrawerTitle;
 
-    private QuestionsListFragment questionsListFragment;
+    private QuestionsListFragment mQuestionsListFragment;
+    private QuestionDetailFragment mQuestionDetailFragment;
     private FragmentManager fragmentManager;
     private FragmentTransaction fragmentTransaction;
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
-        admin = false;
+        isAdmin = false;
         mToolbar = (Toolbar) findViewById(R.id.list_question_toolbar);
         setSupportActionBar(mToolbar);
 
@@ -132,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements
                     DataSnapshot firstChild = dataSnapshot.getChildren().iterator().next();
                     User user = firstChild.getValue(User.class);
                     if (user.getUid().equals(mFirebaseUser.getUid())) {
-                        admin = true;
+                        isAdmin = true;
                         MenuItem menuItem = mNavigationView.getMenu().findItem(R.id.admin_menu);
                         menuItem.setVisible(true);
                     }
@@ -155,12 +161,6 @@ public class MainActivity extends AppCompatActivity implements
                 .addApi(Auth.GOOGLE_SIGN_IN_API)
                 .build();
 
-        questionsListFragment = new QuestionsListFragment();
-        fragmentManager = getSupportFragmentManager();
-        fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.content_base, questionsListFragment);
-        fragmentTransaction.commit();
-
         fab = (FloatingActionButton) findViewById(R.id.add_button);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -169,6 +169,12 @@ public class MainActivity extends AppCompatActivity implements
                 startActivity(intent);
             }
         });
+
+        if (savedInstanceState == null) {
+            fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.add(R.id.content_base, new QuestionsListFragment());
+            fragmentTransaction.commit();
+        }
     }
 
     @Override
@@ -226,10 +232,10 @@ public class MainActivity extends AppCompatActivity implements
     public boolean onNavigationItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav_questions:
-                questionsListFragment = new QuestionsListFragment();
-                questionsListFragment.setReferenceToAdapter(QA.PUBLISHED);
-                fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.content_base, questionsListFragment);
+                mQuestionsListFragment = new QuestionsListFragment();
+                mQuestionsListFragment.setReferenceToAdapter(QA.PUBLISHED);
+                fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.content_base, mQuestionsListFragment);
                 fragmentTransaction.commit();
                 mDrawerLayout.closeDrawer(GravityCompat.START);
                 return true;
@@ -247,17 +253,17 @@ public class MainActivity extends AppCompatActivity implements
                 mDrawerLayout.closeDrawer(GravityCompat.START);
                 return true;
             case R.id.nav_about:
-                fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction = getSupportFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.content_base, new AboutFragment());
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
                 mDrawerLayout.closeDrawer(GravityCompat.START);
                 return true;
             case R.id.nav_review:
-                questionsListFragment = new QuestionsListFragment();
-                questionsListFragment.setReferenceToAdapter(QA.UNDER_REVIEW);
-                fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.content_base, questionsListFragment);
+                mQuestionsListFragment = new QuestionsListFragment();
+                mQuestionsListFragment.setReferenceToAdapter(QA.UNDER_REVIEW);
+                fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.content_base, mQuestionsListFragment);
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
                 mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -298,11 +304,11 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void setDetails(QA qa) {
-        QuestionDetailFragment qdf= new QuestionDetailFragment();
-        qdf.setObjectForView(qa);
-        fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.content_base, qdf);
+    public void onQuestionSelected(QA qa) {
+        mQuestionDetailFragment= new QuestionDetailFragment();
+        mQuestionDetailFragment.setObjectForView(qa);
+        fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.content_base, mQuestionDetailFragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
