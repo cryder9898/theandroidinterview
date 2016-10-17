@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
@@ -14,7 +13,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -28,8 +26,6 @@ import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -37,13 +33,11 @@ import com.android.interview.model.QA;
 import com.android.interview.navigationdrawer.AboutFragment;
 import com.android.interview.navigationdrawer.QuestionDetailFragment;
 import com.android.interview.navigationdrawer.QuestionsListFragment;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.google.firebase.database.ValueEventListener;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -53,21 +47,21 @@ public class MainActivity extends AppCompatActivity implements
     private static final int REQUEST_INVITE = 1;
     private static final String ANONYMOUS = "anonymous";
     private static final String TAG = "MainActivity";
+    public static boolean admin;
 
     private DrawerLayout mDrawerLayout;
     private Toolbar mToolbar;
     private ActionBarDrawerToggle mDrawerToggle;
-    private FloatingActionButton mAddButton;
-    private ShareActionProvider mShareActionProvider;
+    private FloatingActionButton fab;
     private SharedPreferences mSharedPreferences;
+    private NavigationView mNavigationView;
 
     private String mUsername;
     private String mPhotoUrl;
 
     private FirebaseAuth mFirebaseAuth;
-    private FirebaseUser mFirebaseUser;
+    private static FirebaseUser mFirebaseUser;
     private FirebaseAnalytics mFirebaseAnalytics;
-    private FirebaseRemoteConfig mFirebaseRemoteConfig;
     private DatabaseReference mFirebaseDatabase;
     private static boolean calledAlready = false;
 
@@ -84,8 +78,8 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
-
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        admin = false;
+        mToolbar = (Toolbar) findViewById(R.id.list_question_toolbar);
         setSupportActionBar(mToolbar);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -94,9 +88,9 @@ public class MainActivity extends AppCompatActivity implements
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-        View headerView = navigationView.getHeaderView(0);
+        mNavigationView = (NavigationView) findViewById(R.id.nav_view);
+        mNavigationView.setNavigationItemSelectedListener(this);
+        View headerView = mNavigationView.getHeaderView(0);
 
         mTitle = mDrawerTitle = mToolbar.getTitle().toString();
 
@@ -112,51 +106,54 @@ public class MainActivity extends AppCompatActivity implements
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
         mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
+
+        // not signed in
         if (mFirebaseUser == null) {
             startActivity(new Intent(this, SignInActivity.class));
             finish();
             return;
         } else {
+            //signed in
             mUsername = mFirebaseUser.getDisplayName();
-
-           /*
-            User user = new User(mUsername, mFirebaseUser.getEmail(),mFirebaseUser.getUid());
-            mFirebaseDatabase.child(User.ADMINS).push().setValue(user);
-            */
-
-            TextView usernameText = (TextView) headerView.findViewById(R.id.username_tv);
-            usernameText.setText(mUsername);
             mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
+            TextView usernameTV = (TextView) headerView.findViewById(R.id.username_tv);
+            usernameTV.setText(mUsername);
             CircleImageView userImage = (CircleImageView) headerView.findViewById(R.id.user_iv);
             Glide.with(this)
                     .load(mPhotoUrl)
                     .into(userImage);
         }
+        mFirebaseDatabase.child(User.ADMINS).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.hasChildren()) {
+                    DataSnapshot firstChild = dataSnapshot.getChildren().iterator().next();
+                    User user = firstChild.getValue(User.class);
+                    if (user.getUid().equals(mFirebaseUser.getUid())) {
+                        admin = true;
+                        MenuItem menuItem = mNavigationView.getMenu().findItem(R.id.admin_menu);
+                        menuItem.setVisible(true);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+         /*
+            User user = new User(mUsername, mFirebaseUser.getEmail(),mFirebaseUser.getUid());
+            mFirebaseDatabase.child(User.ADMINS).push().setValue(user);
+            */
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API)
                 .build();
-
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-        mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
-
-        // Define Firebase Remote Config Settings.
-        FirebaseRemoteConfigSettings firebaseRemoteConfigSettings =
-                new FirebaseRemoteConfigSettings.Builder()
-                        .setDeveloperModeEnabled(true)
-                        .build();
-
-        // Define default config values. Defaults are used when fetched config values are not
-        // available. Eg: if an error occurred fetching values from the server.
-        Map<String, Object> defaultConfigMap = new HashMap<>();
-        defaultConfigMap.put("friendly_msg_length", 10L);
-        // Apply config settings and default values.
-        mFirebaseRemoteConfig.setConfigSettings(firebaseRemoteConfigSettings);
-        mFirebaseRemoteConfig.setDefaults(defaultConfigMap);
-        // Fetch remote config.
-        fetchConfig();
 
         questionsListFragment = new QuestionsListFragment();
         fragmentManager = getSupportFragmentManager();
@@ -164,8 +161,8 @@ public class MainActivity extends AppCompatActivity implements
         fragmentTransaction.replace(R.id.content_base, questionsListFragment);
         fragmentTransaction.commit();
 
-        mAddButton = (FloatingActionButton) findViewById(R.id.add_button);
-        mAddButton.setOnClickListener(new View.OnClickListener() {
+        fab = (FloatingActionButton) findViewById(R.id.add_button);
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, AddQuestionActivity.class);
@@ -199,9 +196,6 @@ public class MainActivity extends AppCompatActivity implements
                 mPhotoUrl = null;
                 startActivity(new Intent(this, SignInActivity.class));
                 return true;
-            case R.id.fresh_config_menu:
-                fetchConfig();
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -230,57 +224,47 @@ public class MainActivity extends AppCompatActivity implements
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.nav_questions) {
-            fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.content_base, questionsListFragment);
-            fragmentTransaction.commit();
-        } else if (id == R.id.nav_quiz) {
-
-        } else if (id == R.id.nav_favorites) {
-
-        } else if (id == R.id.nav_share) {
-            Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
-            sharingIntent.setType("text/plain");
-            String shareBody = "here goes your share content body";
-            sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Android Interview");
-            sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
-            startActivity(Intent.createChooser(sharingIntent, "Share using"));
-        } else if (id == R.id.nav_about) {
-            fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.content_base, new AboutFragment());
-            fragmentTransaction.addToBackStack(null);
-            fragmentTransaction.commit();
+        switch (item.getItemId()) {
+            case R.id.nav_questions:
+                questionsListFragment = new QuestionsListFragment();
+                questionsListFragment.setReferenceToAdapter(QA.PUBLISHED);
+                fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.content_base, questionsListFragment);
+                fragmentTransaction.commit();
+                mDrawerLayout.closeDrawer(GravityCompat.START);
+                return true;
+            case R.id.nav_quiz:
+                return true;
+            case R.id.nav_favorites:
+                return true;
+            case R.id.nav_share:
+                Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                sharingIntent.setType("text/plain");
+                String shareBody = "here goes your share content body";
+                sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Android Interview");
+                sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                startActivity(Intent.createChooser(sharingIntent, "Share using"));
+                mDrawerLayout.closeDrawer(GravityCompat.START);
+                return true;
+            case R.id.nav_about:
+                fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.content_base, new AboutFragment());
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+                mDrawerLayout.closeDrawer(GravityCompat.START);
+                return true;
+            case R.id.nav_review:
+                questionsListFragment = new QuestionsListFragment();
+                questionsListFragment.setReferenceToAdapter(QA.UNDER_REVIEW);
+                fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.content_base, questionsListFragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+                mDrawerLayout.closeDrawer(GravityCompat.START);
+                return true;
+            default:
+                return true;
         }
-        mDrawerLayout.closeDrawer(GravityCompat.START);
-        return true;
-    }
-
-
-    // Fetch the config to determine the allowed length of messages.
-    public void fetchConfig() {
-        long cacheExpiration = 3600; // 1 hour in seconds
-        // If developer mode is enabled reduce cacheExpiration to 0 so that each fetch goes to the
-        // server. This should not be used in release builds.
-        if (mFirebaseRemoteConfig.getInfo().getConfigSettings().isDeveloperModeEnabled()) {
-            cacheExpiration = 0;
-        }
-        mFirebaseRemoteConfig.fetch(cacheExpiration)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        // Make the fetched config available via FirebaseRemoteConfig get<type> calls.
-                        mFirebaseRemoteConfig.activateFetched();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // There has been an error fetching the config
-                        Log.w(TAG, "Error fetching config: " + e.getMessage());
-                    }
-                });
     }
 
     private void sendInvitation() {
@@ -298,7 +282,6 @@ public class MainActivity extends AppCompatActivity implements
 
         if (requestCode == REQUEST_INVITE) {
             if (resultCode == RESULT_OK) {
-                // Use Firebase Measurement to log that invitation was sent.
                 Bundle payload = new Bundle();
                 payload.putString(FirebaseAnalytics.Param.VALUE, "inv_sent");
 
@@ -306,12 +289,9 @@ public class MainActivity extends AppCompatActivity implements
                 String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
                 Log.d(TAG, "Invitations sent: " + ids.length);
             } else {
-                // Use Firebase Measurement to log that invitation was not sent
                 Bundle payload = new Bundle();
                 payload.putString(FirebaseAnalytics.Param.VALUE, "inv_not_sent");
                 mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SHARE, payload);
-
-                // Sending failed or it was canceled, show failure message to the user
                 Log.d(TAG, "Failed to send invitation.");
             }
         }

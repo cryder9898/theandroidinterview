@@ -1,20 +1,18 @@
 package com.android.interview.model;
 
+import com.android.interview.FirebaseUtils;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-/**
- * Created by cwryd on 10/12/2016.
- */
-
 public class TestQuestions {
 
-    public final QA qa1 = new QA("What is an Activity?",
+    public static QA qa1 = new QA("What is an Activity?",
             "An activity represents a single screen with a user interface just like window or frame of Java.Android" +
                     " activity is the subclass of ContextThemeWrapper class.",
-            "https://www.tutorialspoint.com/android/android_acitivities.htm");
-    public final QA qa2 = new QA("Write a Java Method that returns the first 100 prime numbers.",
+            "https://www.tutorialspoint.com/android/android_acitivities.htm",
+            FirebaseUtils.getCurrentUserId());
+    public static QA qa2 = new QA("Write a Java Method that returns the first 100 prime numbers.",
             "for (i = 1; i <= 100; i++)         \n" +
                     "       { \t\t  \t  \n" +
                     "          int counter=0; \t  \n" +
@@ -31,11 +29,11 @@ public class TestQuestions {
                     "\t     primeNumbers = primeNumbers + i + \" \";\n" +
                     "\t  }\t\n" +
                     "       }\t",
-            "http://beginnersbook.com/2014/01/java-program-to-display-prime-numbers/");
+            "http://beginnersbook.com/2014/01/java-program-to-display-prime-numbers/",
+            FirebaseUtils.getCurrentUserId());
 
-    public void loadQuestions() {
-        DatabaseReference fd = FirebaseDatabase.getInstance().getReference();
-        fd.child(QA.PUBLISHED).push().setValue(qa1);
-        fd.child(QA.PUBLISHED).push().setValue(qa2);
+    public static void loadQuestions() {
+        FirebaseUtils.getPublishedQuestionsRef().push().setValue(qa1);
+        FirebaseUtils.getPublishedQuestionsRef().push().setValue(qa2);
     }
 }

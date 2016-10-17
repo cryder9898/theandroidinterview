@@ -18,13 +18,15 @@ public class QA {
     private boolean favorite;
     private String username;
     private HashMap<String, Object> timestampLastChanged;
+    private String uid;
 
     public QA(){}
 
-    public QA(String question, String answer, String uri) {
+    public QA(String question, String answer, String url, String uid) {
         this.question = question;
         this.answer = answer;
-        this.url = uri;
+        this.url = url;
+        this.uid = uid;
         favorite = false;
         HashMap<String, Object> timestampNowObject = new HashMap<String, Object>();
         timestampNowObject.put("timestamp", ServerValue.TIMESTAMP);
@@ -78,5 +80,13 @@ public class QA {
     @Exclude
     public long getTimestampLastChangedLong() {
         return (long) timestampLastChanged.get("timestamp");
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 }

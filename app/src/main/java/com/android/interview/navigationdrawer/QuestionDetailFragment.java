@@ -13,16 +13,16 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.android.interview.model.QA;
 
-/**
- * Created by cwryd on 10/12/2016.
- */
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 
 public class QuestionDetailFragment extends Fragment {
 
     private View rootView;
-    private TextView questionET;
-    private TextView answerET;
-    private TextView urlET;
+    private TextView question;
+    private TextView answer;
+    private TextView url;
+    private TextView timestamp;
     private QA mQA;
 
     private AdView mAdView;
@@ -39,12 +39,15 @@ public class QuestionDetailFragment extends Fragment {
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
 
-        questionET = (TextView) rootView.findViewById(R.id.question_detail_tv);
-        answerET = (TextView) rootView.findViewById(R.id.answer_detail_tv);
-        urlET = (TextView) rootView.findViewById(R.id.url_detail_tv);
-        answerET.setText(mQA.getAnswer());
-        questionET.setText(mQA.getQuestion());
-        urlET.setText(mQA.getUrl());
+        question = (TextView) rootView.findViewById(R.id.question_detail_tv);
+        answer = (TextView) rootView.findViewById(R.id.answer_detail_tv);
+        url = (TextView) rootView.findViewById(R.id.url_detail_tv);
+        timestamp = (TextView) rootView.findViewById(R.id.timestamp_detail_tv);
+        answer.setText(mQA.getAnswer());
+        question.setText(mQA.getQuestion());
+        url.setText(mQA.getUrl());
+        SimpleDateFormat sfd = new SimpleDateFormat("MM-dd-yyyy");
+        timestamp.setText(sfd.format(new Date(mQA.getTimestampLastChangedLong())));
         return rootView;
     }
 

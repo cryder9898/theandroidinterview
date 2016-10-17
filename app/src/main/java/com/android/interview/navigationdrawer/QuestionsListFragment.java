@@ -13,29 +13,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.android.interview.FirebaseUtils;
+import com.android.interview.MainActivity;
 import com.android.interview.R;
 import com.android.interview.model.TestQuestions;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.android.interview.model.QA;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 public class QuestionsListFragment extends Fragment {
 
     private static final String TAG = "QuestionsListFragment";
-    private static final String QUESTIONS_CHILD = "questions";
     private static final String QUESTION_DELETED_EVENT = "question_deleted";
     private static final String QUESTION_ADDED_EVENT = "question_added";
+    private static DatabaseReference adapterRef = FirebaseUtils.getPublishedQuestionsRef();
 
-    private DatabaseReference mFirebaseDatabaseReference;
     private FirebaseAnalytics mFirebaseAnalytics;
 
     private View rootView;
-    private RecyclerView mMessageRecyclerView;
+    private RecyclerView mQuestionList;
     private LinearLayoutManager mLinearLayoutManager;
     private QAAdapter mFirebaseAdapter;
-
-    private boolean isPublished = true;
 
     public OnListItemClickListener activity;
 
@@ -47,18 +45,26 @@ public class QuestionsListFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        activity = null;
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_list_questions, container, false);
-
-        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        mMessageRecyclerView = (RecyclerView) rootView.findViewById(R.id.messageRecyclerView);
+        if (adapterRef.equals(FirebaseUtils.getReviewQuestionsRef())) {
+            getActivity().setTitle(getString(R.string.questions_list_fragment_review));
+        } else {
+            getActivity().setTitle(getString(R.string.app_name));
+        }
+        mQuestionList = (RecyclerView) rootView.findViewById(R.id.messageRecyclerView);
 
         initRecyclerView();
-//        TestQuestions tq = new TestQuestions();
-//        tq.loadQuestions();
-        FirebaseAnalytics.getInstance(getContext()).logEvent(QUESTION_ADDED_EVENT, null);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
+        mFirebaseAnalytics.logEvent(QUESTION_ADDED_EVENT, null);
         return rootView;
     }
 
@@ -69,30 +75,39 @@ public class QuestionsListFragment extends Fragment {
         mFirebaseAdapter = new QAAdapter(QA.class,
                 R.layout.item_question,
                 QAAdapter.QAHolder.class,
-                mFirebaseDatabaseReference.child(QA.PUBLISHED));
+                adapterRef);
 
-        mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
-        mMessageRecyclerView.setAdapter(mFirebaseAdapter);
+        mQuestionList.setLayoutManager(mLinearLayoutManager);
+        mQuestionList.setAdapter(mFirebaseAdapter);
+
+        TestQuestions.loadQuestions();
+
         mFirebaseAdapter.setOnItemClickListener(new QAAdapter.ClickListener() {
             @Override
             public void onItemClick(int position, View v) {
-                Log.d(TAG, "onItemClick position: " + position);
                 activity.setDetails(mFirebaseAdapter.getItem(position));
             }
 
             @Override
             public void onItemLongClick(int position, View v) {
-                Log.d(TAG, "onItemLongClick pos = " + position);
-                mFirebaseAdapter.getRef(position).removeValue();
-                mFirebaseAnalytics.logEvent(QUESTION_DELETED_EVENT, null);
-                Toast.makeText(getContext(),"Question Deleted",Toast.LENGTH_SHORT).show();
-
+                Log.d("CHRIS",String.valueOf(MainActivity.admin));
+                if (MainActivity.admin) {
+                    mFirebaseAdapter.getRef(position).removeValue();
+                    mFirebaseAnalytics.logEvent(QUESTION_DELETED_EVENT, null);
+                    Toast.makeText(getContext(), "Question Deleted", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
     }
 
-
+    public void setReferenceToAdapter(String s) {
+        if (s == QA.PUBLISHED) {
+            adapterRef = FirebaseUtils.getPublishedQuestionsRef();
+        } else {
+            adapterRef = FirebaseUtils.getReviewQuestionsRef();
+        }
+    }
 
     @Override
     public void onDestroyView() {

@@ -6,6 +6,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.android.interview.model.QA;
@@ -19,7 +20,7 @@ public class AddQuestionActivity extends AppCompatActivity {
     Toolbar toolbar;
     EditText addQuestion;
     EditText addAnswer;
-    EditText addUri;
+    EditText addUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +34,7 @@ public class AddQuestionActivity extends AppCompatActivity {
 
         addQuestion = (EditText) findViewById(R.id.add_question_et);
         addAnswer = (EditText) findViewById(R.id.add_answer_et);
-        addUri = (EditText) findViewById(R.id.add_uri_et);
+        addUrl = (EditText) findViewById(R.id.add_url_et);
 
     }
 
@@ -46,15 +47,14 @@ public class AddQuestionActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.add_question) {
-            if ((addQuestion.getText().toString() != "") && (addAnswer.getText().toString() != "")) {
+            if (addQuestion.getText().toString() != "") {
                 QA qa = new QA(addQuestion.getText().toString(),
                         addAnswer.getText().toString(),
-                        addUri.getText().toString());
-                DatabaseReference mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-                mFirebaseDatabaseReference.child(QA.UNDER_REVIEW).push().setValue(qa);
-                addQuestion.setText("");
-                addAnswer.setText("");
+                        addUrl.getText().toString(),
+                        FirebaseUtils.getCurrentUserId());
+                FirebaseUtils.getReviewQuestionsRef().push().setValue(qa);
                 FirebaseAnalytics.getInstance(this).logEvent(QUESTION_ADDED_EVENT, null);
+                Toast.makeText(this,"Question will be reviewed by our Admins",Toast.LENGTH_SHORT).show();
                 finish();
             }
         }
