@@ -72,7 +72,6 @@ public class MainActivity extends AppCompatActivity implements
 
     private QuestionsListFragment mQuestionsListFragment;
     private QuestionDetailFragment mQuestionDetailFragment;
-    private FragmentManager fragmentManager;
     private FragmentTransaction fragmentTransaction;
 
     @Override
@@ -114,7 +113,6 @@ public class MainActivity extends AppCompatActivity implements
         mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
-
         // not signed in
         if (mFirebaseUser == null) {
             startActivity(new Intent(this, SignInActivity.class));
@@ -130,26 +128,27 @@ public class MainActivity extends AppCompatActivity implements
             Glide.with(this)
                     .load(mPhotoUrl)
                     .into(userImage);
-        }
-        mFirebaseDatabase.child(User.ADMINS).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.hasChildren()) {
-                    DataSnapshot firstChild = dataSnapshot.getChildren().iterator().next();
-                    User user = firstChild.getValue(User.class);
-                    if (user.getUid().equals(mFirebaseUser.getUid())) {
-                        isAdmin = true;
-                        MenuItem menuItem = mNavigationView.getMenu().findItem(R.id.admin_menu);
-                        menuItem.setVisible(true);
+            mFirebaseDatabase.child(User.ADMINS).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.hasChildren()) {
+                        for (DataSnapshot child: dataSnapshot.getChildren()) {
+                            User user = child.getValue(User.class);
+                            if (user.getUid().equals(mFirebaseUser.getUid())) {
+                                isAdmin = true;
+                                MenuItem menuItem = mNavigationView.getMenu().findItem(R.id.admin_menu);
+                                menuItem.setVisible(true);
+                            }
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
+                }
+            });
+        }
 
          /*
             User user = new User(mUsername, mFirebaseUser.getEmail(),mFirebaseUser.getUid());

@@ -8,7 +8,6 @@ import java.util.HashMap;
 @IgnoreExtraProperties
 public class QA {
 
-    public static final String QUESTIONS = "questions";
     public static final String PUBLISHED = "published";
     public static final String UNDER_REVIEW = "under_review";
 

@@ -36,4 +36,8 @@ public class TestQuestions {
         FirebaseUtils.getPublishedQuestionsRef().push().setValue(qa1);
         FirebaseUtils.getPublishedQuestionsRef().push().setValue(qa2);
     }
+
+    public static void main (String... args) {
+
+    }
 }
