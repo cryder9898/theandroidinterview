@@ -2,6 +2,7 @@ package com.android.interview.navigationdrawer;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.android.interview.AddQuestionActivity;
 import com.android.interview.FirebaseUtils;
 import com.android.interview.MainActivity;
 import com.android.interview.R;
@@ -20,7 +22,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.android.interview.model.QA;
 import com.google.firebase.database.DatabaseReference;
 
-public class QuestionsListFragment extends Fragment {
+public class QuestionsListFragment extends Fragment implements FABActionInterface{
 
     private static final String TAG = "QuestionsListFragment";
     private static final String QUESTION_DELETED_EVENT = "question_deleted";
@@ -124,6 +126,12 @@ public class QuestionsListFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+    }
+
+    @Override
+    public void fabOnClick() {
+        Intent intent = new Intent(getActivity(), AddQuestionActivity.class);
+        startActivity(intent);
     }
 
     public interface OnListItemClickListener {

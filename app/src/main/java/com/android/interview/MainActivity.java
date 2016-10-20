@@ -1,5 +1,6 @@
 package com.android.interview;
 
+import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -7,8 +8,8 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -47,7 +48,10 @@ public class MainActivity extends AppCompatActivity implements
     private static final int REQUEST_INVITE = 1;
     private static final String ANONYMOUS = "anonymous";
     private static final String TAG = "MainActivity";
-    public static boolean isAdmin;
+    private static final String LIST = "list";
+    private static final String DETAIL = "detail";
+    private static final String ABOUT = "about";
+    public static boolean isAdmin = false;
 
     private DrawerLayout mDrawerLayout;
     private Toolbar mToolbar;
@@ -82,9 +86,8 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_base);
-        isAdmin = false;
-        mToolbar = (Toolbar) findViewById(R.id.list_question_toolbar);
+        setContentView(R.layout.activity_main);
+        mToolbar = (Toolbar) findViewById(R.id.activity_main_toolbar);
         setSupportActionBar(mToolbar);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -160,25 +163,56 @@ public class MainActivity extends AppCompatActivity implements
                 .addApi(Auth.GOOGLE_SIGN_IN_API)
                 .build();
 
-        fab = (FloatingActionButton) findViewById(R.id.add_button);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, AddQuestionActivity.class);
-                startActivity(intent);
+                Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.content_base);
+                String tag = currentFragment.getTag();
+                Log.d("CHRIS",tag);
+                switch (tag) {
+                    case LIST:
+                        ((QuestionsListFragment) currentFragment).fabOnClick();
+                        break;
+                    case DETAIL:
+                        ((QuestionDetailFragment) currentFragment).fabOnClick();
+                        break;
+                    case ABOUT:
+                        break;
+
+                }
             }
         });
 
         if (savedInstanceState == null) {
             fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.add(R.id.content_base, new QuestionsListFragment());
+            fragmentTransaction.add(R.id.content_base, new QuestionsListFragment(), LIST);
             fragmentTransaction.commit();
         }
     }
 
     @Override
+    protected void onResume() {
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.content_base);
+        String tag = currentFragment.getTag();
+        switch (tag) {
+            case LIST:
+                break;
+            case DETAIL:
+                if (isAdmin) {
+                    setFabIcon(R.drawable.ic_mode_edit_white_24dp);
+                }
+                break;
+            case ABOUT:
+                fab.hide();
+                break;
+        }
+        super.onStart();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.base_options, menu);
+        getMenuInflater().inflate(R.menu.activity_main_options, menu);
         return true;
     }
 
@@ -211,7 +245,19 @@ public class MainActivity extends AppCompatActivity implements
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.content_base);
+            String tag = currentFragment.getTag();
+            switch (tag) {
+                case LIST:
+                    break;
+                case DETAIL:
+                    setFabIcon(R.drawable.ic_add_white_36dp);
+                    super.onBackPressed();
+                    break;
+                default:
+                    setFabIcon(R.drawable.ic_add_white_36dp);
+                    super.onBackPressed();
+            }
         }
     }
 
@@ -234,7 +280,7 @@ public class MainActivity extends AppCompatActivity implements
                 mQuestionsListFragment = new QuestionsListFragment();
                 mQuestionsListFragment.setReferenceToAdapter(QA.PUBLISHED);
                 fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.content_base, mQuestionsListFragment);
+                fragmentTransaction.replace(R.id.content_base, mQuestionsListFragment, LIST);
                 fragmentTransaction.commit();
                 mDrawerLayout.closeDrawer(GravityCompat.START);
                 return true;
@@ -253,16 +299,17 @@ public class MainActivity extends AppCompatActivity implements
                 return true;
             case R.id.nav_about:
                 fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.content_base, new AboutFragment());
+                fragmentTransaction.replace(R.id.content_base, new AboutFragment(), ABOUT);
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
                 mDrawerLayout.closeDrawer(GravityCompat.START);
+                fab.hide();
                 return true;
             case R.id.nav_review:
                 mQuestionsListFragment = new QuestionsListFragment();
                 mQuestionsListFragment.setReferenceToAdapter(QA.UNDER_REVIEW);
                 fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.content_base, mQuestionsListFragment);
+                fragmentTransaction.replace(R.id.content_base, mQuestionsListFragment, LIST);
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
                 mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -307,9 +354,23 @@ public class MainActivity extends AppCompatActivity implements
         mQuestionDetailFragment= new QuestionDetailFragment();
         mQuestionDetailFragment.setObjectForView(qa);
         fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.content_base, mQuestionDetailFragment);
+        fragmentTransaction.replace(R.id.content_base, mQuestionDetailFragment, DETAIL);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
+        if (isAdmin) {
+            setFabIcon(R.drawable.ic_mode_edit_white_24dp);
+        }
+    }
+
+    // Hides FAB and shows it with resId image
+    private void setFabIcon(final int resId) {
+        fab.hide(new FloatingActionButton.OnVisibilityChangedListener() {
+            @Override
+            public void onHidden(FloatingActionButton fab) {
+                fab.setImageResource(resId);
+                fab.show();
+            }
+        });
     }
 }
 

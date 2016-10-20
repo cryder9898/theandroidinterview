@@ -10,8 +10,6 @@ import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.android.interview.model.QA;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 public class AddQuestionActivity extends AppCompatActivity {
 
@@ -25,8 +23,8 @@ public class AddQuestionActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_question);
-        toolbar = (Toolbar) findViewById(R.id.add_question_toolbar);
+        setContentView(R.layout.activity_edit_question);
+        toolbar = (Toolbar) findViewById(R.id.edit_question_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -40,13 +38,13 @@ public class AddQuestionActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.add_question, menu);
+        getMenuInflater().inflate(R.menu.edit_question, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.add_question) {
+        if (item.getItemId() == R.id.enter_question) {
             if (addQuestion.getText().toString() != "") {
                 QA qa = new QA(addQuestion.getText().toString(),
                         addAnswer.getText().toString(),

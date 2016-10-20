@@ -1,13 +1,19 @@
 package com.android.interview.navigationdrawer;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.android.interview.EditQuestionActivity;
+import com.android.interview.MainActivity;
 import com.android.interview.R;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -16,7 +22,9 @@ import com.android.interview.model.QA;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 
-public class QuestionDetailFragment extends Fragment {
+import static com.android.interview.MainActivity.isAdmin;
+
+public class QuestionDetailFragment extends Fragment implements FABActionInterface {
 
     private static final String POSITION = "position";
 
@@ -59,6 +67,7 @@ public class QuestionDetailFragment extends Fragment {
         url.setText(mQA.getUrl());
         SimpleDateFormat sfd = new SimpleDateFormat("MM-dd-yyyy");
         timestamp.setText(sfd.format(new Date(mQA.getTimestampLastChangedLong())));
+
         return rootView;
     }
 
@@ -88,5 +97,13 @@ public class QuestionDetailFragment extends Fragment {
 
     public void setObjectForView(QA qa) {
         mQA = qa;
+    }
+
+    @Override
+    public void fabOnClick() {
+        if (isAdmin) {
+            Intent intent = new Intent(getActivity(), EditQuestionActivity.class);
+            startActivity(intent);
+        }
     }
 }
