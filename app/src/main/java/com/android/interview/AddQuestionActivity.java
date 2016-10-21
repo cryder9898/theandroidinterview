@@ -15,16 +15,16 @@ public class AddQuestionActivity extends AppCompatActivity {
 
     private static final String QUESTION_ADDED_EVENT = "question added";
 
-    Toolbar toolbar;
-    EditText addQuestion;
-    EditText addAnswer;
-    EditText addUrl;
+    private Toolbar toolbar;
+    private EditText addQuestion;
+    private EditText addAnswer;
+    private EditText addUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_question);
-        toolbar = (Toolbar) findViewById(R.id.edit_question_toolbar);
+        setContentView(R.layout.activity_add_question);
+        toolbar = (Toolbar) findViewById(R.id.add_question_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -38,7 +38,7 @@ public class AddQuestionActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.edit_question, menu);
+        getMenuInflater().inflate(R.menu.enter_question, menu);
         return true;
     }
 
@@ -52,7 +52,7 @@ public class AddQuestionActivity extends AppCompatActivity {
                         FirebaseUtils.getCurrentUserId());
                 FirebaseUtils.getReviewQuestionsRef().push().setValue(qa);
                 FirebaseAnalytics.getInstance(this).logEvent(QUESTION_ADDED_EVENT, null);
-                Toast.makeText(this,"Question will be reviewed by our Admins",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,"Question Entered",Toast.LENGTH_SHORT).show();
                 finish();
             }
         }

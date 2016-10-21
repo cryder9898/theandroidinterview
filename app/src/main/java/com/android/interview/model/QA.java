@@ -1,12 +1,16 @@
 package com.android.interview.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 import com.google.firebase.database.ServerValue;
+
 import java.util.HashMap;
 
 @IgnoreExtraProperties
-public class QA {
+public class QA implements Parcelable{
 
     public static final String PUBLISHED = "published";
     public static final String UNDER_REVIEW = "under_review";
@@ -30,6 +34,15 @@ public class QA {
         HashMap<String, Object> timestampNowObject = new HashMap<String, Object>();
         timestampNowObject.put("timestamp", ServerValue.TIMESTAMP);
         this.timestampLastChanged = timestampNowObject;
+    }
+
+    private QA(Parcel in) {
+        question = in.readString();
+        answer = in.readString();
+        url = in.readString();
+        uid = in.readString();
+        favorite = (Boolean) in.readValue(null);
+        timestampLastChanged = in.readHashMap(null);
     }
 
     public String getUsername() {
@@ -81,11 +94,32 @@ public class QA {
         return (long) timestampLastChanged.get("timestamp");
     }
 
-    public String getUid() {
-        return uid;
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
-    public void setUid(String uid) {
-        this.uid = uid;
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(question);
+        dest.writeString(answer);
+        dest.writeString(url);
+        dest.writeString(uid);
+        dest.writeValue(favorite);
+        dest.writeMap(timestampLastChanged);
     }
+
+    public static final Parcelable.Creator<QA> CREATOR
+            = new Parcelable.Creator<QA>() {
+
+        @Override
+        public QA createFromParcel(Parcel in) {
+            return new QA(in);
+        }
+
+        @Override
+        public QA[] newArray(int size) {
+            return new QA[size];
+        }
+    };
 }

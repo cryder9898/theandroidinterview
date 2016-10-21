@@ -1,5 +1,7 @@
 package com.android.interview.navigationdrawer;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -103,7 +105,9 @@ public class QuestionDetailFragment extends Fragment implements FABActionInterfa
     public void fabOnClick() {
         if (isAdmin) {
             Intent intent = new Intent(getActivity(), EditQuestionActivity.class);
+            intent.putExtra("QA", mQA);
             startActivity(intent);
         }
     }
+
 }

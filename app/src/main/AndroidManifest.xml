@@ -42,7 +42,11 @@
             android:name=".AddQuestionActivity"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme" />
-        <activity android:name=".EditQuestionActivity"></activity>
+
+        <activity
+            android:name=".EditQuestionActivity"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

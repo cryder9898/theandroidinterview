@@ -5,11 +5,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -71,9 +69,6 @@ public class MainActivity extends AppCompatActivity implements
 
     private GoogleApiClient mGoogleApiClient;
 
-    private String mTitle;
-    private String mDrawerTitle;
-
     private QuestionsListFragment mQuestionsListFragment;
     private QuestionDetailFragment mQuestionDetailFragment;
     private FragmentTransaction fragmentTransaction;
@@ -100,11 +95,6 @@ public class MainActivity extends AppCompatActivity implements
         mNavigationView.setNavigationItemSelectedListener(this);
         View headerView = mNavigationView.getHeaderView(0);
 
-        mTitle = mDrawerTitle = mToolbar.getTitle().toString();
-
-        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        mUsername = ANONYMOUS;
-
         if (!calledAlready) {
             FirebaseDatabase.getInstance().setPersistenceEnabled(true);
             calledAlready = true;
@@ -116,8 +106,9 @@ public class MainActivity extends AppCompatActivity implements
         mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
-        // not signed in
+        mUsername = ANONYMOUS;
         if (mFirebaseUser == null) {
+            // not signed in
             startActivity(new Intent(this, SignInActivity.class));
             finish();
             return;
@@ -153,11 +144,6 @@ public class MainActivity extends AppCompatActivity implements
             });
         }
 
-         /*
-            User user = new User(mUsername, mFirebaseUser.getEmail(),mFirebaseUser.getUid());
-            mFirebaseDatabase.child(User.ADMINS).push().setValue(user);
-            */
-
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API)
@@ -169,7 +155,6 @@ public class MainActivity extends AppCompatActivity implements
             public void onClick(View view) {
                 Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.content_base);
                 String tag = currentFragment.getTag();
-                Log.d("CHRIS",tag);
                 switch (tag) {
                     case LIST:
                         ((QuestionsListFragment) currentFragment).fabOnClick();
@@ -179,14 +164,14 @@ public class MainActivity extends AppCompatActivity implements
                         break;
                     case ABOUT:
                         break;
-
                 }
             }
         });
 
         if (savedInstanceState == null) {
+            mQuestionsListFragment = new QuestionsListFragment();
             fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.add(R.id.content_base, new QuestionsListFragment(), LIST);
+            fragmentTransaction.add(R.id.content_base, mQuestionsListFragment, LIST);
             fragmentTransaction.commit();
         }
     }
