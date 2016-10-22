@@ -2,7 +2,6 @@ package com.android.interview;
 
 import android.support.v4.app.Fragment;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -49,13 +48,17 @@ public class MainActivity extends AppCompatActivity implements
     private static final String LIST = "list";
     private static final String DETAIL = "detail";
     private static final String ABOUT = "about";
+    public static final String PUBLISHED = "published";
+    public static final String UNDER_REVIEW = "under_review";
     public static boolean isAdmin = false;
+    private String listType = PUBLISHED;
+    private static boolean calledAlready = false;
+
 
     private DrawerLayout mDrawerLayout;
     private Toolbar mToolbar;
     private ActionBarDrawerToggle mDrawerToggle;
     private FloatingActionButton fab;
-    private SharedPreferences mSharedPreferences;
     private NavigationView mNavigationView;
 
     private String mUsername;
@@ -65,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements
     private static FirebaseUser mFirebaseUser;
     private FirebaseAnalytics mFirebaseAnalytics;
     private DatabaseReference mFirebaseDatabase;
-    private static boolean calledAlready = false;
+    private ValueEventListener mValueEventListener;
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -103,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements
         // Initialize Firebase Auth
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
-        mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
+        mFirebaseDatabase = FirebaseUtils.getBaseRef();
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         mUsername = ANONYMOUS;
@@ -122,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements
             Glide.with(this)
                     .load(mPhotoUrl)
                     .into(userImage);
-            mFirebaseDatabase.child(User.ADMINS).addListenerForSingleValueEvent(new ValueEventListener() {
+            mValueEventListener = new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if (dataSnapshot.hasChildren()) {
@@ -141,7 +144,8 @@ public class MainActivity extends AppCompatActivity implements
                 public void onCancelled(DatabaseError databaseError) {
 
                 }
-            });
+            };
+            mFirebaseDatabase.child(User.ADMINS).addListenerForSingleValueEvent(mValueEventListener);
         }
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -169,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements
         });
 
         if (savedInstanceState == null) {
-            mQuestionsListFragment = new QuestionsListFragment();
+            mQuestionsListFragment = QuestionsListFragment.newInstance(listType);
             fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction.add(R.id.content_base, mQuestionsListFragment, LIST);
             fragmentTransaction.commit();
@@ -178,6 +182,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     protected void onResume() {
+        // Displaying what FAB icon to display or to HIDE the FAB
         Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.content_base);
         String tag = currentFragment.getTag();
         switch (tag) {
@@ -193,6 +198,12 @@ public class MainActivity extends AppCompatActivity implements
                 break;
         }
         super.onStart();
+    }
+
+    @Override
+    protected void onDestroy() {
+        mFirebaseDatabase.removeEventListener(mValueEventListener);
+        super.onDestroy();
     }
 
     @Override
@@ -233,8 +244,6 @@ public class MainActivity extends AppCompatActivity implements
             Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.content_base);
             String tag = currentFragment.getTag();
             switch (tag) {
-                case LIST:
-                    break;
                 case DETAIL:
                     setFabIcon(R.drawable.ic_add_white_36dp);
                     super.onBackPressed();
@@ -262,8 +271,8 @@ public class MainActivity extends AppCompatActivity implements
     public boolean onNavigationItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav_questions:
-                mQuestionsListFragment = new QuestionsListFragment();
-                mQuestionsListFragment.setReferenceToAdapter(QA.PUBLISHED);
+                listType = PUBLISHED;
+                mQuestionsListFragment = QuestionsListFragment.newInstance(listType);
                 fragmentTransaction = getSupportFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.content_base, mQuestionsListFragment, LIST);
                 fragmentTransaction.commit();
@@ -291,8 +300,8 @@ public class MainActivity extends AppCompatActivity implements
                 fab.hide();
                 return true;
             case R.id.nav_review:
-                mQuestionsListFragment = new QuestionsListFragment();
-                mQuestionsListFragment.setReferenceToAdapter(QA.UNDER_REVIEW);
+                listType = UNDER_REVIEW;
+                mQuestionsListFragment = QuestionsListFragment.newInstance(listType);
                 fragmentTransaction = getSupportFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.content_base, mQuestionsListFragment, LIST);
                 fragmentTransaction.addToBackStack(null);
@@ -335,9 +344,9 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onQuestionSelected(QA qa) {
-        mQuestionDetailFragment= new QuestionDetailFragment();
-        mQuestionDetailFragment.setObjectForView(qa);
+    public void onQuestionSelected(String listType, String key, QA qa) {
+        mQuestionDetailFragment = QuestionDetailFragment.newInstance(listType);
+        mQuestionDetailFragment.initFragObject(key);
         fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.content_base, mQuestionDetailFragment, DETAIL);
         fragmentTransaction.addToBackStack(null);

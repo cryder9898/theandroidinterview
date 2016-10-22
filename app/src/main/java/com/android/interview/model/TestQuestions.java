@@ -32,10 +32,56 @@ public class TestQuestions {
             "http://beginnersbook.com/2014/01/java-program-to-display-prime-numbers/",
             FirebaseUtils.getCurrentUserId());
 
-    public static void loadQuestions() {
+    public static QA qa3 = new QA("Write Java program to print the fibonacci series",
+            "Not using recursion:\n" +
+            "class FibonacciExample1{  \n" +
+                    "public static void main(String args[])  \n" +
+                    "{    \n" +
+                    " int n1=0,n2=1,n3,i,count=10;    \n" +
+                    " System.out.print(n1+\" \"+n2);//printing 0 and 1    \n" +
+                    "    \n" +
+                    " for(i=2;i<count;++i)//loop starts from 2 because 0 and 1 are already printed    \n" +
+                    " {    \n" +
+                    "  n3=n1+n2;    \n" +
+                    "  System.out.print(\" \"+n3);    \n" +
+                    "  n1=n2;    \n" +
+                    "  n2=n3;    \n" +
+                    " }    \n" +
+                    "  \n" +
+                    "}}  \n\n" +
+                    "Using recursion" +
+                    "class FibonacciExample2{  \n" +
+                    " static int n1=0,n2=1,n3=0;    \n" +
+                    " static void printFibonacci(int count){    \n" +
+                    "    if(count>0){    \n" +
+                    "         n3 = n1 + n2;    \n" +
+                    "         n1 = n2;    \n" +
+                    "         n2 = n3;    \n" +
+                    "         System.out.print(\" \"+n3);   \n" +
+                    "         printFibonacci(count-1);    \n" +
+                    "     }    \n" +
+                    " }    \n" +
+                    " public static void main(String args[]){    \n" +
+                    "  int count=10;    \n" +
+                    "  System.out.print(n1+\" \"+n2);//printing 0 and 1    \n" +
+                    "  printFibonacci(count-2);//n-2 because 2 numbers are already printed   \n" +
+                    " }  \n" +
+                    "}  ",
+            "http://www.javatpoint.com/fibonacci-series-in-java",
+            FirebaseUtils.getCurrentUserId());
+
+    public static void loadReviews() {
+        FirebaseUtils.getReviewQuestionsRef().push().setValue(qa1);
+        FirebaseUtils.getReviewQuestionsRef().push().setValue(qa2);
+        FirebaseUtils.getReviewQuestionsRef().push().setValue(qa3);
+    }
+
+    public static void loadPublished() {
         FirebaseUtils.getPublishedQuestionsRef().push().setValue(qa1);
         FirebaseUtils.getPublishedQuestionsRef().push().setValue(qa2);
+        FirebaseUtils.getPublishedQuestionsRef().push().setValue(qa3);
     }
+
 
     public static void main (String... args) {
 
