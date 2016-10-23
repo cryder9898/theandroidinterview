@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.android.interview">
 
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
@@ -12,9 +13,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
-            android:label="@string/title_activity_base"
-            android:theme="@style/AppTheme">
+            android:name=".SplashActivity"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,8 +22,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SignInActivity"
-            android:theme="@style/AppTheme"/>
+            android:name=".MainActivity"
+            android:label="@string/title_activity_base" />
+        <activity
+            android:name=".SignInActivity" />
 
         <service
             android:name=".services.MyFirebaseMessagingService"
@@ -42,13 +44,11 @@
 
         <activity
             android:name=".AddQuestionActivity"
-            android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme" />
+            android:parentActivityName=".MainActivity" />
 
         <activity
             android:name=".EditQuestionActivity"
-            android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme" />
+            android:parentActivityName=".MainActivity" />
     </application>
 
 </manifest>

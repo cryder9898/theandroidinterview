@@ -100,16 +100,21 @@ public class QuestionsListFragment extends Fragment implements FABActionInterfac
             @Override
             public void onItemClick(int position, View v) {
                 String key = mQAAdapter.getRef(position).getKey();
-                mCallback.onQuestionSelected(listType, key, mQAAdapter.getItem(position));
+                mCallback.onQuestionSelected(listType, key);
             }
 
             @Override
             public void onItemLongClick(int position, View v) {
                 Log.d("CHRIS",String.valueOf(MainActivity.isAdmin));
                 if (MainActivity.isAdmin) {
+                    String key = mQAAdapter.getRef(position).getKey();
+                    String question = mQAAdapter.getItem(position).getQuestion();
                     mQAAdapter.getRef(position).removeValue();
-                    mFirebaseAnalytics.logEvent(QUESTION_DELETED_EVENT, null);
-                    Toast.makeText(getContext(), "Question Deleted", Toast.LENGTH_SHORT).show();
+                    Bundle params = new Bundle();
+                    params.putString("key", key);
+                    params.putString("question", question);
+                    FirebaseAnalytics.getInstance(getActivity()).logEvent(QUESTION_DELETED_EVENT, params);
+                    Toast.makeText(getActivity(), "Question Deleted", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -128,6 +133,6 @@ public class QuestionsListFragment extends Fragment implements FABActionInterfac
     }
 
     public interface OnListItemClickListener {
-        void onQuestionSelected(String listType, String key, QA qa);
+        void onQuestionSelected(String listType, String key);
     }
 }

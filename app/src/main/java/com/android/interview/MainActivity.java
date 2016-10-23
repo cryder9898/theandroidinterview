@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.content_base);
+                Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.container_main);
                 String tag = currentFragment.getTag();
                 switch (tag) {
                     case LIST:
@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements
         if (savedInstanceState == null) {
             mQuestionsListFragment = QuestionsListFragment.newInstance(listType);
             fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.add(R.id.content_base, mQuestionsListFragment, LIST);
+            fragmentTransaction.add(R.id.container_main, mQuestionsListFragment, LIST);
             fragmentTransaction.commit();
         }
     }
@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         // Displaying what FAB icon to display or to HIDE the FAB
-        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.content_base);
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.container_main);
         String tag = currentFragment.getTag();
         switch (tag) {
             case LIST:
@@ -241,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
         } else {
-            Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.content_base);
+            Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.container_main);
             String tag = currentFragment.getTag();
             switch (tag) {
                 case DETAIL:
@@ -274,7 +274,8 @@ public class MainActivity extends AppCompatActivity implements
                 listType = PUBLISHED;
                 mQuestionsListFragment = QuestionsListFragment.newInstance(listType);
                 fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.content_base, mQuestionsListFragment, LIST);
+                fragmentTransaction.replace(R.id.container_main, mQuestionsListFragment, LIST);
+                fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
                 mDrawerLayout.closeDrawer(GravityCompat.START);
                 return true;
@@ -293,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements
                 return true;
             case R.id.nav_about:
                 fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.content_base, new AboutFragment(), ABOUT);
+                fragmentTransaction.replace(R.id.container_main, new AboutFragment(), ABOUT);
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
                 mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -303,7 +304,7 @@ public class MainActivity extends AppCompatActivity implements
                 listType = UNDER_REVIEW;
                 mQuestionsListFragment = QuestionsListFragment.newInstance(listType);
                 fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.content_base, mQuestionsListFragment, LIST);
+                fragmentTransaction.replace(R.id.container_main, mQuestionsListFragment, LIST);
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
                 mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -344,11 +345,11 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onQuestionSelected(String listType, String key, QA qa) {
+    public void onQuestionSelected(String listType, String key) {
         mQuestionDetailFragment = QuestionDetailFragment.newInstance(listType);
         mQuestionDetailFragment.initFragObject(key);
         fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.content_base, mQuestionDetailFragment, DETAIL);
+        fragmentTransaction.replace(R.id.container_main, mQuestionDetailFragment, DETAIL);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
         if (isAdmin) {
