@@ -45,7 +45,7 @@ public class AddQuestionActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.enter_question) {
-            if (addQuestion.getText().toString() != "") {
+            if (!addQuestion.getText().toString().equals("")) {
                 QA qa = new QA(addQuestion.getText().toString(),
                         addAnswer.getText().toString(),
                         addUrl.getText().toString(),
@@ -54,6 +54,8 @@ public class AddQuestionActivity extends AppCompatActivity {
                 FirebaseAnalytics.getInstance(this).logEvent(QUESTION_ADDED_EVENT, null);
                 Toast.makeText(this,"Question Entered",Toast.LENGTH_SHORT).show();
                 finish();
+            } else {
+                Toast.makeText(this, "Enter something!!!", Toast.LENGTH_SHORT).show();
             }
         }
         return super.onOptionsItemSelected(item);

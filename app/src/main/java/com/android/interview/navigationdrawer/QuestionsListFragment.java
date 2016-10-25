@@ -75,19 +75,18 @@ public class QuestionsListFragment extends Fragment implements FABActionInterfac
         } else {
             getActivity().setTitle(getString(R.string.app_name));
         }
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.messageRecyclerView);
 
         initRecyclerView();
 
         //TestQuestions.loadReviews();
-        //TestQuestions.loadPublished();
+        TestQuestions.loadPublished();
         return rootView;
     }
 
     private void initRecyclerView() {
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.messageRecyclerView);
+        mRecyclerView.setHasFixedSize(true);
         mLinearLayoutManager = new LinearLayoutManager(getContext());
-        mLinearLayoutManager.setStackFromEnd(true);
-
         mQAAdapter = new QAAdapter(QA.class,
                 R.layout.item_question,
                 QAAdapter.QAHolder.class,
@@ -124,6 +123,7 @@ public class QuestionsListFragment extends Fragment implements FABActionInterfac
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        mQAAdapter.cleanup();
     }
 
     @Override

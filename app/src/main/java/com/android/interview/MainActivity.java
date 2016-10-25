@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements
     public static final String PUBLISHED = "published";
     public static final String UNDER_REVIEW = "under_review";
     public static boolean isAdmin = false;
-    private String listType = PUBLISHED;
+    private String listType;
     private static boolean calledAlready = false;
 
 
@@ -79,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putString("type", listType);
     }
 
     @Override
@@ -103,7 +104,6 @@ public class MainActivity extends AppCompatActivity implements
             calledAlready = true;
         }
 
-        // Initialize Firebase Auth
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
         mFirebaseDatabase = FirebaseUtils.getBaseRef();
@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements
 
                 }
             };
-            mFirebaseDatabase.child(User.ADMINS).addListenerForSingleValueEvent(mValueEventListener);
+            FirebaseUtils.getAdminsRef().addListenerForSingleValueEvent(mValueEventListener);
         }
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -173,10 +173,13 @@ public class MainActivity extends AppCompatActivity implements
         });
 
         if (savedInstanceState == null) {
+            listType = PUBLISHED;
             mQuestionsListFragment = QuestionsListFragment.newInstance(listType);
             fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction.add(R.id.container_main, mQuestionsListFragment, LIST);
             fragmentTransaction.commit();
+        } else {
+            listType = savedInstanceState.getString("type");
         }
     }
 
@@ -246,13 +249,10 @@ public class MainActivity extends AppCompatActivity implements
             switch (tag) {
                 case DETAIL:
                     setFabIcon(R.drawable.ic_add_white_36dp);
-                    super.onBackPressed();
                     break;
-                default:
-                    setFabIcon(R.drawable.ic_add_white_36dp);
-                    super.onBackPressed();
             }
         }
+        super.onBackPressed();
     }
 
     @Override
