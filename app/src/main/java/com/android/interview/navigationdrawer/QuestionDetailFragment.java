@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.android.interview.AddQuestionActivity;
 import com.android.interview.EditQuestionActivity;
 import com.android.interview.FirebaseUtils;
 import com.android.interview.R;
@@ -24,6 +25,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 
+import static com.android.interview.MainActivity.UNDER_REVIEW;
 import static com.android.interview.MainActivity.isAdmin;
 
 public class QuestionDetailFragment extends Fragment implements FABActionInterface {
@@ -124,10 +126,13 @@ public class QuestionDetailFragment extends Fragment implements FABActionInterfa
 
     @Override
     public void fabOnClick() {
-        if (isAdmin) {
+        if (isAdmin && listType.equals(UNDER_REVIEW)) {
             Intent intent = new Intent(getActivity(), EditQuestionActivity.class);
             intent.putExtra("key", mKey);
             intent.putExtra("type", listType);
+            startActivity(intent);
+        } else {
+            Intent intent = new Intent(getActivity(), AddQuestionActivity.class);
             startActivity(intent);
         }
     }

@@ -192,8 +192,11 @@ public class MainActivity extends AppCompatActivity implements
             case LIST:
                 break;
             case DETAIL:
-                if (isAdmin) {
+                if (isAdmin && listType.equals(UNDER_REVIEW)) {
+                    fab.show();
                     setFabIcon(R.drawable.ic_mode_edit_white_24dp);
+                } else {
+                    fab.hide();
                 }
                 break;
             case ABOUT:
@@ -205,7 +208,6 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     protected void onDestroy() {
-        mFirebaseDatabase.removeEventListener(mValueEventListener);
         super.onDestroy();
     }
 
@@ -352,7 +354,7 @@ public class MainActivity extends AppCompatActivity implements
         fragmentTransaction.replace(R.id.container_main, mQuestionDetailFragment, DETAIL);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
-        if (isAdmin) {
+        if (isAdmin && listType.equals(UNDER_REVIEW)) {
             setFabIcon(R.drawable.ic_mode_edit_white_24dp);
         }
     }

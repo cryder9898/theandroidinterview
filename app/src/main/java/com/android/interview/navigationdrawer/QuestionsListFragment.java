@@ -79,7 +79,7 @@ public class QuestionsListFragment extends Fragment implements FABActionInterfac
         initRecyclerView();
 
         //TestQuestions.loadReviews();
-        TestQuestions.loadPublished();
+        //TestQuestions.loadPublished();
         return rootView;
     }
 

@@ -14,8 +14,8 @@ public class QA {
     private String url;
     private boolean favorite;
     private String username;
-    private HashMap<String, Object> timestampLastChanged;
     private String uid;
+    private HashMap<String, Object> timestampLastChanged;
 
     public QA(){}
 

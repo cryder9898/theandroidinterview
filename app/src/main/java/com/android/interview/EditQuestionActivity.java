@@ -66,7 +66,7 @@ public class EditQuestionActivity extends AppCompatActivity {
             }
         };
         mRef = FirebaseUtils.getBaseRef().child(mType).child(mKey);
-        mRef.addValueEventListener(valueEventListener);
+        mRef.addListenerForSingleValueEvent(valueEventListener);
     }
 
     @Override

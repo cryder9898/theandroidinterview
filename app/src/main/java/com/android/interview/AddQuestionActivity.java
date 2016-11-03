@@ -55,7 +55,7 @@ public class AddQuestionActivity extends AppCompatActivity {
                 Toast.makeText(this,"Question Entered",Toast.LENGTH_SHORT).show();
                 finish();
             } else {
-                Toast.makeText(this, "Enter something!!!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Enter something!!!    ", Toast.LENGTH_SHORT).show();
             }
         }
         return super.onOptionsItemSelected(item);
