@@ -1,9 +1,7 @@
 package com.android.interview;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -19,7 +17,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 
-public class EditQuestionActivity extends AppCompatActivity {
+public class EditQuestionActivity extends BaseActivity {
 
     private static final String TAG = "EditQuestionActivity";
     private static final String QUESTION_PUBLISHED_EVENT = "question published";
@@ -29,7 +27,6 @@ public class EditQuestionActivity extends AppCompatActivity {
     private EditText editAnswer;
     private EditText editUrl;
     private String mKey;
-    private String mType;
 
     private DatabaseReference mRef;
     private ValueEventListener valueEventListener;
@@ -49,7 +46,6 @@ public class EditQuestionActivity extends AppCompatActivity {
         editUrl = (EditText) findViewById(R.id.edit_url_et);
 
         mKey = getIntent().getStringExtra("key");
-        mType = getIntent().getStringExtra("type");
 
         valueEventListener = new ValueEventListener() {
             @Override
@@ -65,7 +61,7 @@ public class EditQuestionActivity extends AppCompatActivity {
 
             }
         };
-        mRef = FirebaseUtils.getBaseRef().child(mType).child(mKey);
+        mRef = FirebaseUtils.getBaseRef().child(BaseActivity.getListType()).child(mKey);
         mRef.addListenerForSingleValueEvent(valueEventListener);
     }
 

@@ -24,7 +24,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
-public class SignInActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,
+public class SignInActivity extends BaseActivity implements GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener {
 
     private static final String TAG = "SignInActivity";

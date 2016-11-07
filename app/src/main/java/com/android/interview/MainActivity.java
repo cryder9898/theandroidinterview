@@ -39,7 +39,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MainActivity extends AppCompatActivity implements
+public class MainActivity extends BaseActivity implements
         GoogleApiClient.OnConnectionFailedListener, NavigationView.OnNavigationItemSelectedListener, QuestionsListFragment.OnListItemClickListener {
 
     private static final int REQUEST_INVITE = 1;
@@ -50,8 +50,6 @@ public class MainActivity extends AppCompatActivity implements
     private static final String ABOUT = "about";
     public static final String PUBLISHED = "published";
     public static final String UNDER_REVIEW = "under_review";
-    public static boolean isAdmin = false;
-    private String listType;
     private static boolean calledAlready = false;
 
 
@@ -65,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements
     private String mPhotoUrl;
 
     private FirebaseAuth mFirebaseAuth;
-    private static FirebaseUser mFirebaseUser;
+    private FirebaseUser mFirebaseUser;
     private FirebaseAnalytics mFirebaseAnalytics;
     private DatabaseReference mFirebaseDatabase;
     private ValueEventListener mValueEventListener;
@@ -77,12 +75,6 @@ public class MainActivity extends AppCompatActivity implements
     private FragmentTransaction fragmentTransaction;
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString("type", listType);
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -92,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar,
                 R.string.drawer_open, R.string.drawer_close);
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
 
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -132,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements
                         for (DataSnapshot child: dataSnapshot.getChildren()) {
                             User user = child.getValue(User.class);
                             if (user.getUid().equals(mFirebaseUser.getUid())) {
-                                isAdmin = true;
+                                setAdmin(true);
                                 MenuItem menuItem = mNavigationView.getMenu().findItem(R.id.admin_menu);
                                 menuItem.setVisible(true);
                             }
@@ -173,13 +165,10 @@ public class MainActivity extends AppCompatActivity implements
         });
 
         if (savedInstanceState == null) {
-            listType = PUBLISHED;
-            mQuestionsListFragment = QuestionsListFragment.newInstance(listType);
+            mQuestionsListFragment = QuestionsListFragment.newInstance(getListType());
             fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction.add(R.id.container_main, mQuestionsListFragment, LIST);
             fragmentTransaction.commit();
-        } else {
-            listType = savedInstanceState.getString("type");
         }
     }
 
@@ -192,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements
             case LIST:
                 break;
             case DETAIL:
-                if (isAdmin && listType.equals(UNDER_REVIEW)) {
+                if (isAdmin() && getListType().equals(UNDER_REVIEW)) {
                     fab.show();
                     setFabIcon(R.drawable.ic_mode_edit_white_24dp);
                 } else {
@@ -208,6 +197,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     protected void onDestroy() {
+        mDrawerLayout.removeDrawerListener(mDrawerToggle);
         super.onDestroy();
     }
 
@@ -234,6 +224,8 @@ public class MainActivity extends AppCompatActivity implements
                 mFirebaseUser = null;
                 mUsername = ANONYMOUS;
                 mPhotoUrl = null;
+                setListType(PUBLISHED);
+                setAdmin(false);
                 startActivity(new Intent(this, SignInActivity.class));
                 return true;
             default:
@@ -273,15 +265,13 @@ public class MainActivity extends AppCompatActivity implements
     public boolean onNavigationItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav_questions:
-                listType = PUBLISHED;
-                mQuestionsListFragment = QuestionsListFragment.newInstance(listType);
+                setListType(PUBLISHED);
+                mQuestionsListFragment = QuestionsListFragment.newInstance(getListType());
                 fragmentTransaction = getSupportFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.container_main, mQuestionsListFragment, LIST);
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
                 mDrawerLayout.closeDrawer(GravityCompat.START);
-                return true;
-            case R.id.nav_quiz:
                 return true;
             case R.id.nav_favorites:
                 return true;
@@ -303,8 +293,8 @@ public class MainActivity extends AppCompatActivity implements
                 fab.hide();
                 return true;
             case R.id.nav_review:
-                listType = UNDER_REVIEW;
-                mQuestionsListFragment = QuestionsListFragment.newInstance(listType);
+                setListType(UNDER_REVIEW);
+                mQuestionsListFragment = QuestionsListFragment.newInstance(getListType());
                 fragmentTransaction = getSupportFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.container_main, mQuestionsListFragment, LIST);
                 fragmentTransaction.addToBackStack(null);
@@ -347,14 +337,14 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onQuestionSelected(String listType, String key) {
-        mQuestionDetailFragment = QuestionDetailFragment.newInstance(listType);
+    public void onQuestionSelected(String key) {
+        mQuestionDetailFragment = QuestionDetailFragment.newInstance(getListType());
         mQuestionDetailFragment.initFragObject(key);
         fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.container_main, mQuestionDetailFragment, DETAIL);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
-        if (isAdmin && listType.equals(UNDER_REVIEW)) {
+        if (isAdmin() && getListType().equals(UNDER_REVIEW)) {
             setFabIcon(R.drawable.ic_mode_edit_white_24dp);
         }
     }

@@ -1,5 +1,5 @@
 package com.android.interview.navigationdrawer;
 
-public interface FABActionInterface {
+public interface FABAction {
     void fabOnClick();
 }

@@ -11,7 +11,7 @@ import android.widget.Toast;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.android.interview.model.QA;
 
-public class AddQuestionActivity extends AppCompatActivity {
+public class AddQuestionActivity extends BaseActivity {
 
     private static final String QUESTION_ADDED_EVENT = "question added";
 

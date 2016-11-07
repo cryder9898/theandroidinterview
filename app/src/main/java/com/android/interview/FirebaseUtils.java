@@ -22,8 +22,10 @@ public class FirebaseUtils {
 
     public static User getUser() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) return null;
-        return new User(user.getDisplayName(), user.getEmail(), user.getUid());
+        if (user != null) {
+            return new User(user.getDisplayName(), user.getEmail(), user.getUid());
+        }
+        return null;
     }
 
     public static DatabaseReference getAdminsRef() {

@@ -15,15 +15,14 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.android.interview.AddQuestionActivity;
+import com.android.interview.BaseActivity;
 import com.android.interview.FirebaseUtils;
 import com.android.interview.MainActivity;
 import com.android.interview.R;
-import com.android.interview.model.TestQuestions;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.android.interview.model.QA;
-import com.google.firebase.database.DatabaseReference;
 
-public class QuestionsListFragment extends Fragment implements FABActionInterface{
+public class QuestionsListFragment extends Fragment implements FABAction {
 
     private static final String TAG = "QuestionsListFragment";
     private static final String QUESTION_DELETED_EVENT = "question_deleted";
@@ -68,9 +67,7 @@ public class QuestionsListFragment extends Fragment implements FABActionInterfac
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_list_questions, container, false);
-        listType = getArguments().getString("type");
-        Log.d("CHRIS", listType);
-        if (listType == MainActivity.UNDER_REVIEW) {
+        if (BaseActivity.getListType() == BaseActivity.UNDER_REVIEW) {
             getActivity().setTitle(getString(R.string.questions_list_fragment_review));
         } else {
             getActivity().setTitle(getString(R.string.app_name));
@@ -90,7 +87,7 @@ public class QuestionsListFragment extends Fragment implements FABActionInterfac
         mQAAdapter = new QAAdapter(QA.class,
                 R.layout.item_question,
                 QAAdapter.QAHolder.class,
-                FirebaseUtils.getBaseRef().child(listType));
+                FirebaseUtils.getBaseRef().child(BaseActivity.getListType()));
 
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         mRecyclerView.setAdapter(mQAAdapter);
@@ -99,13 +96,13 @@ public class QuestionsListFragment extends Fragment implements FABActionInterfac
             @Override
             public void onItemClick(int position, View v) {
                 String key = mQAAdapter.getRef(position).getKey();
-                mCallback.onQuestionSelected(listType, key);
+                mCallback.onQuestionSelected(key);
             }
 
             @Override
             public void onItemLongClick(int position, View v) {
-                Log.d("CHRIS",String.valueOf(MainActivity.isAdmin));
-                if (MainActivity.isAdmin) {
+                Log.d("CHRIS",String.valueOf(BaseActivity.isAdmin()));
+                if (BaseActivity.isAdmin()) {
                     String key = mQAAdapter.getRef(position).getKey();
                     String question = mQAAdapter.getItem(position).getQuestion();
                     mQAAdapter.getRef(position).removeValue();
@@ -133,6 +130,6 @@ public class QuestionsListFragment extends Fragment implements FABActionInterfac
     }
 
     public interface OnListItemClickListener {
-        void onQuestionSelected(String listType, String key);
+        void onQuestionSelected(String key);
     }
 }

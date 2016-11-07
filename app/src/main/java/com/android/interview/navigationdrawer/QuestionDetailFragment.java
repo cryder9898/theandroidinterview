@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.android.interview.AddQuestionActivity;
+import com.android.interview.BaseActivity;
 import com.android.interview.EditQuestionActivity;
 import com.android.interview.FirebaseUtils;
 import com.android.interview.R;
@@ -25,10 +26,10 @@ import com.google.firebase.database.ValueEventListener;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 
+import static com.android.interview.BaseActivity.getListType;
 import static com.android.interview.MainActivity.UNDER_REVIEW;
-import static com.android.interview.MainActivity.isAdmin;
 
-public class QuestionDetailFragment extends Fragment implements FABActionInterface {
+public class QuestionDetailFragment extends Fragment implements FABAction {
 
     private static final String TAG = "QuestionsDetailFragment";
     private static final String POSITION = "position";
@@ -39,7 +40,6 @@ public class QuestionDetailFragment extends Fragment implements FABActionInterfa
     private TextView url;
     private TextView timestamp;
     private static String mKey;
-    private String listType;
 
     private AdView mAdView;
     private DatabaseReference ref;
@@ -60,7 +60,6 @@ public class QuestionDetailFragment extends Fragment implements FABActionInterfa
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_detail_question, container, false);
-        listType = getArguments().getString("type");
 
         //init AdMob
         mAdView = (AdView) rootView.findViewById(R.id.adView);
@@ -71,8 +70,7 @@ public class QuestionDetailFragment extends Fragment implements FABActionInterfa
         answer = (TextView) rootView.findViewById(R.id.answer_detail_tv);
         url = (TextView) rootView.findViewById(R.id.url_detail_tv);
         timestamp = (TextView) rootView.findViewById(R.id.timestamp_detail_tv);
-
-        ref = FirebaseUtils.getBaseRef().child(listType).child(mKey);
+        ref = FirebaseUtils.getBaseRef().child(BaseActivity.getListType()).child(mKey);
         mValueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -126,10 +124,9 @@ public class QuestionDetailFragment extends Fragment implements FABActionInterfa
 
     @Override
     public void fabOnClick() {
-        if (isAdmin && listType.equals(UNDER_REVIEW)) {
+        if (BaseActivity.isAdmin() && BaseActivity.getListType().equals(UNDER_REVIEW)) {
             Intent intent = new Intent(getActivity(), EditQuestionActivity.class);
             intent.putExtra("key", mKey);
-            intent.putExtra("type", listType);
             startActivity(intent);
         } else {
             Intent intent = new Intent(getActivity(), AddQuestionActivity.class);
