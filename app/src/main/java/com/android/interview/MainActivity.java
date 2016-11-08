@@ -52,7 +52,6 @@ public class MainActivity extends BaseActivity implements
     public static final String UNDER_REVIEW = "under_review";
     private static boolean calledAlready = false;
 
-
     private DrawerLayout mDrawerLayout;
     private Toolbar mToolbar;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -89,7 +88,6 @@ public class MainActivity extends BaseActivity implements
 
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(this);
-        View headerView = mNavigationView.getHeaderView(0);
 
         if (!calledAlready) {
             FirebaseDatabase.getInstance().setPersistenceEnabled(true);
@@ -108,15 +106,9 @@ public class MainActivity extends BaseActivity implements
             finish();
             return;
         } else {
-            //signed in
-            mUsername = mFirebaseUser.getDisplayName();
-            mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
-            TextView usernameTV = (TextView) headerView.findViewById(R.id.username_tv);
-            usernameTV.setText(mUsername);
-            CircleImageView userImage = (CircleImageView) headerView.findViewById(R.id.user_iv);
-            Glide.with(this)
-                    .load(mPhotoUrl)
-                    .into(userImage);
+            //initializes Drawer header
+            initNavHeader();
+
             mValueEventListener = new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -172,6 +164,29 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
+    private void initNavHeader() {
+        View headerView = mNavigationView.getHeaderView(0);
+        mUsername = mFirebaseUser.getDisplayName();
+        mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
+        TextView usernameTV = (TextView) headerView.findViewById(R.id.username_tv);
+        usernameTV.setText(mUsername);
+        CircleImageView userImage = (CircleImageView) headerView.findViewById(R.id.user_iv);
+        Glide.with(this)
+                .load(mPhotoUrl)
+                .into(userImage);
+    }
+
+    // Hides FAB and shows it with resId image
+    private void setFabIcon(final int resId) {
+        fab.hide(new FloatingActionButton.OnVisibilityChangedListener() {
+            @Override
+            public void onHidden(FloatingActionButton fab) {
+                fab.setImageResource(resId);
+                fab.show();
+            }
+        });
+    }
+
     @Override
     protected void onResume() {
         // Displaying what FAB icon to display or to HIDE the FAB
@@ -189,7 +204,7 @@ public class MainActivity extends BaseActivity implements
                 }
                 break;
             case ABOUT:
-                fab.hide();
+                setFabIcon(R.drawable.ic_mail_outline_white_24dp);
                 break;
         }
         super.onStart();
@@ -244,6 +259,8 @@ public class MainActivity extends BaseActivity implements
                 case DETAIL:
                     setFabIcon(R.drawable.ic_add_white_36dp);
                     break;
+                case ABOUT:
+                    setFabIcon(R.drawable.ic_add_white_36dp);
             }
         }
         super.onBackPressed();
@@ -290,7 +307,7 @@ public class MainActivity extends BaseActivity implements
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
                 mDrawerLayout.closeDrawer(GravityCompat.START);
-                fab.hide();
+                setFabIcon(R.drawable.ic_mail_outline_white_24dp);
                 return true;
             case R.id.nav_review:
                 setListType(UNDER_REVIEW);
@@ -347,17 +364,6 @@ public class MainActivity extends BaseActivity implements
         if (isAdmin() && getListType().equals(UNDER_REVIEW)) {
             setFabIcon(R.drawable.ic_mode_edit_white_24dp);
         }
-    }
-
-    // Hides FAB and shows it with resId image
-    private void setFabIcon(final int resId) {
-        fab.hide(new FloatingActionButton.OnVisibilityChangedListener() {
-            @Override
-            public void onHidden(FloatingActionButton fab) {
-                fab.setImageResource(resId);
-                fab.show();
-            }
-        });
     }
 }
 

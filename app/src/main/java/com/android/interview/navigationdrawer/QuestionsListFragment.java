@@ -17,7 +17,6 @@ import android.widget.Toast;
 import com.android.interview.AddQuestionActivity;
 import com.android.interview.BaseActivity;
 import com.android.interview.FirebaseUtils;
-import com.android.interview.MainActivity;
 import com.android.interview.R;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.android.interview.model.QA;
@@ -33,7 +32,7 @@ public class QuestionsListFragment extends Fragment implements FABAction {
     private View rootView;
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLinearLayoutManager;
-    private QAAdapter mQAAdapter;
+    private QuestionListAdapter mQLAdapter;
     private String listType;
 
     public OnListItemClickListener mCallback;
@@ -84,18 +83,18 @@ public class QuestionsListFragment extends Fragment implements FABAction {
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.messageRecyclerView);
         mRecyclerView.setHasFixedSize(true);
         mLinearLayoutManager = new LinearLayoutManager(getContext());
-        mQAAdapter = new QAAdapter(QA.class,
+        mQLAdapter = new QuestionListAdapter(QA.class,
                 R.layout.item_question,
-                QAAdapter.QAHolder.class,
+                QuestionListAdapter.QAHolder.class,
                 FirebaseUtils.getBaseRef().child(BaseActivity.getListType()));
 
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
-        mRecyclerView.setAdapter(mQAAdapter);
+        mRecyclerView.setAdapter(mQLAdapter);
 
-        mQAAdapter.setOnItemClickListener(new QAAdapter.ClickListener() {
+        mQLAdapter.setOnItemClickListener(new QuestionListAdapter.ClickListener() {
             @Override
             public void onItemClick(int position, View v) {
-                String key = mQAAdapter.getRef(position).getKey();
+                String key = mQLAdapter.getRef(position).getKey();
                 mCallback.onQuestionSelected(key);
             }
 
@@ -103,9 +102,9 @@ public class QuestionsListFragment extends Fragment implements FABAction {
             public void onItemLongClick(int position, View v) {
                 Log.d("CHRIS",String.valueOf(BaseActivity.isAdmin()));
                 if (BaseActivity.isAdmin()) {
-                    String key = mQAAdapter.getRef(position).getKey();
-                    String question = mQAAdapter.getItem(position).getQuestion();
-                    mQAAdapter.getRef(position).removeValue();
+                    String key = mQLAdapter.getRef(position).getKey();
+                    String question = mQLAdapter.getItem(position).getQuestion();
+                    mQLAdapter.getRef(position).removeValue();
                     Bundle params = new Bundle();
                     params.putString("key", key);
                     params.putString("question", question);
@@ -120,7 +119,7 @@ public class QuestionsListFragment extends Fragment implements FABAction {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mQAAdapter.cleanup();
+        mQLAdapter.cleanup();
     }
 
     @Override

@@ -14,15 +14,15 @@ import com.google.firebase.database.Query;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class QAAdapter extends FirebaseRecyclerAdapter<QA, QAAdapter.QAHolder> {
+public class QuestionListAdapter extends FirebaseRecyclerAdapter<QA, QuestionListAdapter.QAHolder> {
 
     private static ClickListener clickListener;
 
-    public QAAdapter(Class<QA> modelClass, int modelLayout, Class<QAHolder> viewHolderClass, DatabaseReference ref) {
+    public QuestionListAdapter(Class<QA> modelClass, int modelLayout, Class<QAHolder> viewHolderClass, DatabaseReference ref) {
         super(modelClass, modelLayout, viewHolderClass, ref);
     }
 
-    public QAAdapter(Class<QA> modelClass, int modelLayout, Class<QAHolder> viewHolderClass, Query ref) {
+    public QuestionListAdapter(Class<QA> modelClass, int modelLayout, Class<QAHolder> viewHolderClass, Query ref) {
         super(modelClass, modelLayout, viewHolderClass, ref);
     }
 
@@ -61,7 +61,7 @@ public class QAAdapter extends FirebaseRecyclerAdapter<QA, QAAdapter.QAHolder> {
     }
 
     public void setOnItemClickListener(ClickListener clickListener) {
-        QAAdapter.clickListener = clickListener;
+        QuestionListAdapter.clickListener = clickListener;
     }
 
     public interface ClickListener {
