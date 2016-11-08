@@ -35,6 +35,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/activity_add_question_detail" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="\nCategory:"/>
+
+        <android.support.v7.widget.AppCompatSpinner
+            android:id="@+id/spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </android.support.v7.widget.AppCompatSpinner>
 
         <EditText
             android:id="@+id/add_question_et"
@@ -43,18 +54,18 @@
             android:hint="Question..." />
 
         <EditText
-            android:id="@+id/add_url_et"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Reference Link"
-            android:inputType="textUri"/>
-
-        <EditText
             android:id="@+id/add_answer_et"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Answer..."
             android:inputType="textMultiLine" />
+
+        <EditText
+            android:id="@+id/add_url_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Reference Link"
+            android:inputType="textUri"/>
     </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>

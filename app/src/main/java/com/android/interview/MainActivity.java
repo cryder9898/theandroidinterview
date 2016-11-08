@@ -1,5 +1,6 @@
 package com.android.interview;
 
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -7,7 +8,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.GravityCompat;
+import android.support.v4.view.*;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -48,13 +49,14 @@ public class MainActivity extends BaseActivity implements
     private static final String LIST = "list";
     private static final String DETAIL = "detail";
     private static final String ABOUT = "about";
-    public static final String PUBLISHED = "published";
-    public static final String UNDER_REVIEW = "under_review";
     private static boolean calledAlready = false;
 
     private DrawerLayout mDrawerLayout;
     private Toolbar mToolbar;
     private ActionBarDrawerToggle mDrawerToggle;
+    private TabLayout mTabLayout;
+    private ViewPager mViewPager;
+    private PagerAdapter mPagerAdapter;
     private FloatingActionButton fab;
     private NavigationView mNavigationView;
 
@@ -85,9 +87,17 @@ public class MainActivity extends BaseActivity implements
                 R.string.drawer_open, R.string.drawer_close);
         mDrawerLayout.addDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
-
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(this);
+
+        mViewPager = (ViewPager) findViewById(R.id.view_pager);
+        mTabLayout = (TabLayout) findViewById(R.id.tabs);
+        mPagerAdapter = new PagerAdapter(getSupportFragmentManager());
+        mViewPager.setAdapter(mPagerAdapter);
+        mTabLayout.setupWithViewPager(mViewPager);
+        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
+        mTabLayout.setTabsFromPagerAdapter(mPagerAdapter);
+
 
         if (!calledAlready) {
             FirebaseDatabase.getInstance().setPersistenceEnabled(true);
@@ -141,7 +151,7 @@ public class MainActivity extends BaseActivity implements
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.container_main);
+                Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.view_pager);
                 String tag = currentFragment.getTag();
                 switch (tag) {
                     case LIST:
@@ -156,12 +166,12 @@ public class MainActivity extends BaseActivity implements
             }
         });
 
-        if (savedInstanceState == null) {
+       /* if (savedInstanceState == null) {
             mQuestionsListFragment = QuestionsListFragment.newInstance(getListType());
             fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction.add(R.id.container_main, mQuestionsListFragment, LIST);
             fragmentTransaction.commit();
-        }
+        }*/
     }
 
     private void initNavHeader() {
@@ -189,8 +199,8 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     protected void onResume() {
-        // Displaying what FAB icon to display or to HIDE the FAB
-        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.container_main);
+      /*  // Displaying what FAB icon to display or to HIDE the FAB
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.view_pager);
         String tag = currentFragment.getTag();
         switch (tag) {
             case LIST:
@@ -206,8 +216,8 @@ public class MainActivity extends BaseActivity implements
             case ABOUT:
                 setFabIcon(R.drawable.ic_mail_outline_white_24dp);
                 break;
-        }
-        super.onStart();
+        }*/
+        super.onResume();
     }
 
     @Override
@@ -253,7 +263,7 @@ public class MainActivity extends BaseActivity implements
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
         } else {
-            Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.container_main);
+            Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.view_pager);
             String tag = currentFragment.getTag();
             switch (tag) {
                 case DETAIL:
@@ -285,7 +295,7 @@ public class MainActivity extends BaseActivity implements
                 setListType(PUBLISHED);
                 mQuestionsListFragment = QuestionsListFragment.newInstance(getListType());
                 fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.container_main, mQuestionsListFragment, LIST);
+                fragmentTransaction.replace(R.id.view_pager, mQuestionsListFragment, LIST);
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
                 mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -303,7 +313,7 @@ public class MainActivity extends BaseActivity implements
                 return true;
             case R.id.nav_about:
                 fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.container_main, new AboutFragment(), ABOUT);
+                fragmentTransaction.replace(R.id.view_pager, new AboutFragment(), ABOUT);
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
                 mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -313,7 +323,7 @@ public class MainActivity extends BaseActivity implements
                 setListType(UNDER_REVIEW);
                 mQuestionsListFragment = QuestionsListFragment.newInstance(getListType());
                 fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.container_main, mQuestionsListFragment, LIST);
+                fragmentTransaction.replace(R.id.view_pager, mQuestionsListFragment, LIST);
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
                 mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -358,7 +368,7 @@ public class MainActivity extends BaseActivity implements
         mQuestionDetailFragment = QuestionDetailFragment.newInstance(getListType());
         mQuestionDetailFragment.initFragObject(key);
         fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.container_main, mQuestionDetailFragment, DETAIL);
+        fragmentTransaction.replace(R.id.view_pager, mQuestionDetailFragment, DETAIL);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
         if (isAdmin() && getListType().equals(UNDER_REVIEW)) {

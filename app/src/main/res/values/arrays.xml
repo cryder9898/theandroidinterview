@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="categories">
+        <item>Coding</item>
+        <item>Android</item>
+        <item>Java</item>
+    </string-array>
+</resources>

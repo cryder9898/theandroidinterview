@@ -7,6 +7,9 @@ public class BaseActivity extends AppCompatActivity {
 
     public static final String PUBLISHED = "published";
     public static final String UNDER_REVIEW = "under_review";
+    public static final String CODING = "coding";
+    public static final String JAVA = "java";
+    public static final String ANDROID = "android";
     private static boolean admin = false;
     private static String listType = PUBLISHED;
 
