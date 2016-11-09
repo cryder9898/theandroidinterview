@@ -17,13 +17,13 @@ public class PagerAdapter extends FragmentStatePagerAdapter{
         Fragment frag=null;
         switch (position){
             case 0:
-                frag=new QuestionsListFragment();
+                frag = QuestionsListFragment.newInstance(BaseActivity.CODING);
                 break;
             case 1:
-                frag=new QuestionsListFragment();
+                frag = QuestionsListFragment.newInstance(BaseActivity.ANDROID);
                 break;
             case 2:
-                frag=new QuestionsListFragment();
+                frag = QuestionsListFragment.newInstance(BaseActivity.JAVA);
                 break;
         }
         return frag;
@@ -39,16 +39,15 @@ public class PagerAdapter extends FragmentStatePagerAdapter{
         String title = "";
         switch (position){
             case 0:
-                title = "Coding";
+                title = BaseActivity.CODING;
                 break;
             case 1:
-                title="Android";
+                title = BaseActivity.ANDROID;
                 break;
             case 2:
-                title="Java";
+                title = BaseActivity.JAVA;
                 break;
         }
-
         return title;
     }
 }

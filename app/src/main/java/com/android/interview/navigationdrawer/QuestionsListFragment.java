@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -17,6 +19,7 @@ import android.widget.Toast;
 import com.android.interview.AddQuestionActivity;
 import com.android.interview.BaseActivity;
 import com.android.interview.FirebaseUtils;
+import com.android.interview.PagerAdapter;
 import com.android.interview.R;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.android.interview.model.QA;
@@ -30,19 +33,21 @@ public class QuestionsListFragment extends Fragment implements FABAction {
     private FirebaseAnalytics mFirebaseAnalytics;
 
     private View rootView;
+
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLinearLayoutManager;
     private QuestionListAdapter mQLAdapter;
-    private String listType;
+    private String category;
+
 
     public OnListItemClickListener mCallback;
 
     public QuestionsListFragment(){}
 
-    public static QuestionsListFragment newInstance(String listType) {
+    public static QuestionsListFragment newInstance(String categories) {
         QuestionsListFragment myFragment = new QuestionsListFragment();
         Bundle args = new Bundle();
-        args.putString("type", listType);
+        args.putString("cat", categories);
         myFragment.setArguments(args);
 
         return myFragment;
@@ -66,16 +71,13 @@ public class QuestionsListFragment extends Fragment implements FABAction {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_list_questions, container, false);
+        getActivity().setTitle(getString(R.string.app_name));
         if (BaseActivity.getListType() == BaseActivity.UNDER_REVIEW) {
             getActivity().setTitle(getString(R.string.questions_list_fragment_review));
-        } else {
-            getActivity().setTitle(getString(R.string.app_name));
         }
-
+        category = getArguments().getString("cat");
+        Log.d(TAG, category);
         initRecyclerView();
-
-        //TestQuestions.loadReviews();
-        //TestQuestions.loadPublished();
         return rootView;
     }
 
@@ -86,8 +88,7 @@ public class QuestionsListFragment extends Fragment implements FABAction {
         mQLAdapter = new QuestionListAdapter(QA.class,
                 R.layout.item_question,
                 QuestionListAdapter.QAHolder.class,
-                FirebaseUtils.getBaseRef().child(BaseActivity.getListType()));
-
+                FirebaseUtils.getBaseRef().child(BaseActivity.getListType()).child(category));
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         mRecyclerView.setAdapter(mQLAdapter);
 
@@ -100,7 +101,6 @@ public class QuestionsListFragment extends Fragment implements FABAction {
 
             @Override
             public void onItemLongClick(int position, View v) {
-                Log.d("CHRIS",String.valueOf(BaseActivity.isAdmin()));
                 if (BaseActivity.isAdmin()) {
                     String key = mQLAdapter.getRef(position).getKey();
                     String question = mQLAdapter.getItem(position).getQuestion();

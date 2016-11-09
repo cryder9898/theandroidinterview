@@ -1,5 +1,6 @@
 package com.android.interview.model;
 
+import com.android.interview.BaseActivity;
 import com.android.interview.FirebaseUtils;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.database.DatabaseReference;
@@ -70,20 +71,23 @@ public class TestQuestions {
             "http://www.javatpoint.com/fibonacci-series-in-java",
             FirebaseUtils.getCurrentUserId());
 
+    public static QA qa4 = new QA("What is a Java interface?",
+            "A Java interface is a bit like a class, except a Java interface can only contain method signatures and fields. " +
+                    "A Java interface cannot contain an implementation of the methods, only the signature (name, parameters and exceptions) of the method. " +
+             "You can use interfaces in Java as a way to achieve polymorphism.",
+            "http://tutorials.jenkov.com/java/interfaces.html",
+            FirebaseUtils.getCurrentUserId());
     public static void loadReviews() {
-        FirebaseUtils.getReviewQuestionsRef().push().setValue(qa1);
-        FirebaseUtils.getReviewQuestionsRef().push().setValue(qa2);
-        FirebaseUtils.getReviewQuestionsRef().push().setValue(qa3);
+        FirebaseUtils.getReviewQuestionsRef().child(BaseActivity.ANDROID).push().setValue(qa1);
+        FirebaseUtils.getReviewQuestionsRef().child(BaseActivity.CODING).push().setValue(qa2);
+        FirebaseUtils.getReviewQuestionsRef().child(BaseActivity.CODING).push().setValue(qa3);
+        FirebaseUtils.getReviewQuestionsRef().child(BaseActivity.JAVA).push().setValue(qa3);
     }
 
     public static void loadPublished() {
-        FirebaseUtils.getPublishedQuestionsRef().push().setValue(qa1);
-        FirebaseUtils.getPublishedQuestionsRef().push().setValue(qa2);
-        FirebaseUtils.getPublishedQuestionsRef().push().setValue(qa3);
-    }
-
-
-    public static void main (String... args) {
-
+        FirebaseUtils.getPublishedQuestionsRef().child(BaseActivity.ANDROID).push().setValue(qa1);
+        FirebaseUtils.getPublishedQuestionsRef().child(BaseActivity.CODING).push().setValue(qa2);
+        FirebaseUtils.getPublishedQuestionsRef().child(BaseActivity.CODING).push().setValue(qa3);
+        FirebaseUtils.getPublishedQuestionsRef().child(BaseActivity.JAVA).push().setValue(qa3);
     }
 }

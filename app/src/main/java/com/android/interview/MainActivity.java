@@ -11,7 +11,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.*;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -19,7 +18,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.android.interview.model.TestQuestions;
 import com.android.interview.model.User;
+import com.android.interview.navigationdrawer.AboutActivity;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.android.gms.auth.api.Auth;
@@ -28,8 +29,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.android.interview.model.QA;
-import com.android.interview.navigationdrawer.AboutFragment;
 import com.android.interview.navigationdrawer.QuestionDetailFragment;
 import com.android.interview.navigationdrawer.QuestionsListFragment;
 import com.google.firebase.database.DataSnapshot;
@@ -57,7 +56,7 @@ public class MainActivity extends BaseActivity implements
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
     private PagerAdapter mPagerAdapter;
-    private FloatingActionButton fab;
+    private FloatingActionButton mFAB;
     private NavigationView mNavigationView;
 
     private String mUsername;
@@ -90,14 +89,12 @@ public class MainActivity extends BaseActivity implements
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(this);
 
-        mViewPager = (ViewPager) findViewById(R.id.view_pager);
+        mViewPager = (ViewPager) findViewById(R.id.viewpager);
         mTabLayout = (TabLayout) findViewById(R.id.tabs);
         mPagerAdapter = new PagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mPagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
-        mTabLayout.setTabsFromPagerAdapter(mPagerAdapter);
-
 
         if (!calledAlready) {
             FirebaseDatabase.getInstance().setPersistenceEnabled(true);
@@ -115,44 +112,45 @@ public class MainActivity extends BaseActivity implements
             startActivity(new Intent(this, SignInActivity.class));
             finish();
             return;
-        } else {
-            //initializes Drawer header
-            initNavHeader();
+        }
+        //TestQuestions.loadPublished();
+        //TestQuestions.loadReviews();
 
-            mValueEventListener = new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.hasChildren()) {
-                        for (DataSnapshot child: dataSnapshot.getChildren()) {
-                            User user = child.getValue(User.class);
-                            if (user.getUid().equals(mFirebaseUser.getUid())) {
-                                setAdmin(true);
-                                MenuItem menuItem = mNavigationView.getMenu().findItem(R.id.admin_menu);
-                                menuItem.setVisible(true);
-                            }
+        //initializes Drawer header
+        initNavHeader();
+
+        mValueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.hasChildren()) {
+                    for (DataSnapshot child: dataSnapshot.getChildren()) {
+                        User user = child.getValue(User.class);
+                        if (user.getUid().equals(mFirebaseUser.getUid())) {
+                            setAdmin(true);
+                            MenuItem menuItem = mNavigationView.getMenu().findItem(R.id.admin_menu);
+                            menuItem.setVisible(true);
                         }
                     }
                 }
+            }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
-                }
-            };
-            FirebaseUtils.getAdminsRef().addListenerForSingleValueEvent(mValueEventListener);
-        }
+            }
+        };
+        FirebaseUtils.getAdminsRef().addListenerForSingleValueEvent(mValueEventListener);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API)
                 .build();
 
-        fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        mFAB = (FloatingActionButton) findViewById(R.id.fab);
+        mFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.view_pager);
-                String tag = currentFragment.getTag();
+                /*String tag = currentFragment.getTag();
                 switch (tag) {
                     case LIST:
                         ((QuestionsListFragment) currentFragment).fabOnClick();
@@ -160,13 +158,11 @@ public class MainActivity extends BaseActivity implements
                     case DETAIL:
                         ((QuestionDetailFragment) currentFragment).fabOnClick();
                         break;
-                    case ABOUT:
-                        break;
-                }
+                }*/
             }
         });
 
-       /* if (savedInstanceState == null) {
+        /*if (savedInstanceState == null) {
             mQuestionsListFragment = QuestionsListFragment.newInstance(getListType());
             fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction.add(R.id.container_main, mQuestionsListFragment, LIST);
@@ -188,7 +184,7 @@ public class MainActivity extends BaseActivity implements
 
     // Hides FAB and shows it with resId image
     private void setFabIcon(final int resId) {
-        fab.hide(new FloatingActionButton.OnVisibilityChangedListener() {
+        mFAB.hide(new FloatingActionButton.OnVisibilityChangedListener() {
             @Override
             public void onHidden(FloatingActionButton fab) {
                 fab.setImageResource(resId);
@@ -199,18 +195,18 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     protected void onResume() {
-      /*  // Displaying what FAB icon to display or to HIDE the FAB
-        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.view_pager);
+        // Displaying what FAB icon to display or to HIDE the FAB
+        /*Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.container_main);
         String tag = currentFragment.getTag();
         switch (tag) {
             case LIST:
                 break;
             case DETAIL:
                 if (isAdmin() && getListType().equals(UNDER_REVIEW)) {
-                    fab.show();
+                    mFAB.show();
                     setFabIcon(R.drawable.ic_mode_edit_white_24dp);
                 } else {
-                    fab.hide();
+                    mFAB.hide();
                 }
                 break;
             case ABOUT:
@@ -263,7 +259,7 @@ public class MainActivity extends BaseActivity implements
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
         } else {
-            Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.view_pager);
+            /*Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.container_main);
             String tag = currentFragment.getTag();
             switch (tag) {
                 case DETAIL:
@@ -271,7 +267,7 @@ public class MainActivity extends BaseActivity implements
                     break;
                 case ABOUT:
                     setFabIcon(R.drawable.ic_add_white_36dp);
-            }
+            }*/
         }
         super.onBackPressed();
     }
@@ -293,11 +289,7 @@ public class MainActivity extends BaseActivity implements
         switch (item.getItemId()) {
             case R.id.nav_questions:
                 setListType(PUBLISHED);
-                mQuestionsListFragment = QuestionsListFragment.newInstance(getListType());
-                fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.view_pager, mQuestionsListFragment, LIST);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
+                mPagerAdapter.notifyDataSetChanged();
                 mDrawerLayout.closeDrawer(GravityCompat.START);
                 return true;
             case R.id.nav_favorites:
@@ -312,20 +304,13 @@ public class MainActivity extends BaseActivity implements
                 mDrawerLayout.closeDrawer(GravityCompat.START);
                 return true;
             case R.id.nav_about:
-                fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.view_pager, new AboutFragment(), ABOUT);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
+                Intent intent = new Intent(MainActivity.this, AboutActivity.class);
+                startActivity(intent);
                 mDrawerLayout.closeDrawer(GravityCompat.START);
-                setFabIcon(R.drawable.ic_mail_outline_white_24dp);
                 return true;
             case R.id.nav_review:
                 setListType(UNDER_REVIEW);
-                mQuestionsListFragment = QuestionsListFragment.newInstance(getListType());
-                fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.view_pager, mQuestionsListFragment, LIST);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
+                mViewPager.setAdapter(mPagerAdapter);
                 mDrawerLayout.closeDrawer(GravityCompat.START);
                 return true;
             default:
@@ -368,7 +353,7 @@ public class MainActivity extends BaseActivity implements
         mQuestionDetailFragment = QuestionDetailFragment.newInstance(getListType());
         mQuestionDetailFragment.initFragObject(key);
         fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.view_pager, mQuestionDetailFragment, DETAIL);
+        fragmentTransaction.attach(mQuestionDetailFragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
         if (isAdmin() && getListType().equals(UNDER_REVIEW)) {
