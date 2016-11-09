@@ -39,4 +39,7 @@ public class FirebaseUtils {
     public static DatabaseReference getReviewQuestionsRef() {
         return getBaseRef().child("under_review");
     }
+    public static DatabaseReference getUsersRef() {
+        return getBaseRef().child("users");
+    }
 }
