@@ -190,6 +190,8 @@ public class MainActivity extends BaseActivity implements
                         ((QuestionDetailFragment) currentFragment).fabOnClick();
                         break;
                 }*/
+                Intent intent = new Intent(MainActivity.this, AddQuestionActivity.class);
+                startActivity(intent);
             }
         });
 

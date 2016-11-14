@@ -47,7 +47,8 @@
             android:name=".EditQuestionActivity"
             android:parentActivityName=".MainActivity" />
         <activity android:name=".BaseActivity" />
-        <activity android:name=".navigationdrawer.AboutActivity"></activity>
+        <activity android:name=".navigationdrawer.AboutActivity" />
+        <activity android:name=".QuestionDetailActivity"></activity>
     </application>
 
 </manifest>

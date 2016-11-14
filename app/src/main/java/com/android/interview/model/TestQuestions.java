@@ -13,6 +13,7 @@ public class TestQuestions {
                     " mCallback is the subclass of ContextThemeWrapper class.",
             "https://www.tutorialspoint.com/android/android_acitivities.htm",
             FirebaseUtils.getCurrentUserId());
+
     public static QA qa2 = new QA("Write a Java Method that returns the first 100 prime numbers.",
             "for (i = 1; i <= 100; i++)         \n" +
                     "       { \t\t  \t  \n" +
@@ -77,17 +78,90 @@ public class TestQuestions {
              "You can use interfaces in Java as a way to achieve polymorphism.",
             "http://tutorials.jenkov.com/java/interfaces.html",
             FirebaseUtils.getCurrentUserId());
+
+    public static QA qa5 = new QA("How does a HashMap work?",
+            "A HashMap stores data into multiple (array of) singly linked lists of entries (also called buckets or bins). "+
+            "All the lists are registered in an array of Entry (Entry<K,V>[] array) and the default capacity"+
+            "of this inner array is 16. In Java 8, the HashMap is implemented using TreeNodes if the size of the LinkedList grows"+
+            "more then 6 Nodes. When using a HashMap, you need to find a hash function for your keys that spreads the keys into the most possible buckets. "+
+            "To do so, you need to avoid hash collisions. The String Object is a good key because of it has good hash function. Integers are also good " +
+            "because their hashcode is their own value.",
+            "http://coding-geek.com/how-does-a-hashmap-work-in-java/",
+            FirebaseUtils.getCurrentUserId());
+
+    public static QA qa6 = new QA("Write a program to find the GCD (Greatest Common Divisor)",
+            "private static long gcd(long a, long b)\n" +
+                    "{\n" +
+                    "    while (b > 0)\n" +
+                    "    {\n" +
+                    "        long temp = b;\n" +
+                    "        b = a % b; // % is remainder\n" +
+                    "        a = temp;\n" +
+                    "    }\n" +
+                    "    return a;\n" +
+                    "}\n" +
+                    "\n" +
+                    "private static long gcd(long[] input)\n" +
+                    "{\n" +
+                    "    long result = input[0];\n" +
+                    "    for(int i = 1; i < input.length; i++) result = gcd(result, input[i]);\n" +
+                    "    return result;\n" +
+                    "}",
+            "http://stackoverflow.com/questions/4201860/how-to-find-gcd-lcm-on-a-set-of-numbers",
+            FirebaseUtils.getCurrentUserId());
+
+    public static QA qa7 = new QA("What are the parts that make up an Android App?",
+            "An Android App consists of Activities, Services, Content Providers and Broadcast Receivers. " +
+            "There is also the manifest file that declares the components to the Android system and there is " +
+            "a res folder where all resources are located. Messages are sent to different components in an Intent" +
+            "object. The Intent object defines a message to activate either a specific component or a specific " +
+            "type of component",
+            "https://developer.android.com/guide/components/fundamentals.html",
+            FirebaseUtils.getCurrentUserId());
+
+    public static QA qa8 = new QA("Detect a cycle in a linked list. Note that the head pointer may be 'null' if the list is empty.",
+            "/*\n" +
+                    "Detect a cycle in a linked list. Note that the head pointer may be 'null' if the list is empty.\n" +
+                    "\n" +
+                    "A Node is defined as: \n" +
+                    "    class Node {\n" +
+                    "        int data;\n" +
+                    "        Node next;\n" +
+                    "    }\n" +
+                    "*/\n" +
+                    "\n" +
+                    "boolean hasCycle(Node head) {\n" +
+                    "    Set<Node> seen = new HashSet<>();\n" +
+                    "    while (head != null) {\n" +
+                    "        seen.add(head);\n" +
+                    "        head = head.next;\n" +
+                    "        if (seen.contains(head)) return true;\n" +
+                    "    }\n" +
+                    "    return false;\n" +
+                    "}\n",
+            "https://www.hackerrank.com/challenges/ctci-linked-list-cycle",
+            FirebaseUtils.getCurrentUserId());
+
     public static void loadReviews() {
         FirebaseUtils.getReviewQuestionsRef().child(BaseActivity.ANDROID).push().setValue(qa1);
         FirebaseUtils.getReviewQuestionsRef().child(BaseActivity.CODING).push().setValue(qa2);
         FirebaseUtils.getReviewQuestionsRef().child(BaseActivity.CODING).push().setValue(qa3);
-        FirebaseUtils.getReviewQuestionsRef().child(BaseActivity.JAVA).push().setValue(qa3);
+        FirebaseUtils.getReviewQuestionsRef().child(BaseActivity.JAVA).push().setValue(qa4);
+        FirebaseUtils.getReviewQuestionsRef().child(BaseActivity.JAVA).push().setValue(qa5);
+        FirebaseUtils.getReviewQuestionsRef().child(BaseActivity.CODING).push().setValue(qa6);
+        FirebaseUtils.getReviewQuestionsRef().child(BaseActivity.ANDROID).push().setValue(qa7);
+        FirebaseUtils.getReviewQuestionsRef().child(BaseActivity.CODING).push().setValue(qa8);
+
     }
 
     public static void loadPublished() {
         FirebaseUtils.getPublishedQuestionsRef().child(BaseActivity.ANDROID).push().setValue(qa1);
         FirebaseUtils.getPublishedQuestionsRef().child(BaseActivity.CODING).push().setValue(qa2);
         FirebaseUtils.getPublishedQuestionsRef().child(BaseActivity.CODING).push().setValue(qa3);
-        FirebaseUtils.getPublishedQuestionsRef().child(BaseActivity.JAVA).push().setValue(qa3);
+        FirebaseUtils.getPublishedQuestionsRef().child(BaseActivity.JAVA).push().setValue(qa4);
+        FirebaseUtils.getPublishedQuestionsRef().child(BaseActivity.JAVA).push().setValue(qa5);
+        FirebaseUtils.getPublishedQuestionsRef().child(BaseActivity.CODING).push().setValue(qa6);
+        FirebaseUtils.getPublishedQuestionsRef().child(BaseActivity.ANDROID).push().setValue(qa7);
+        FirebaseUtils.getPublishedQuestionsRef().child(BaseActivity.CODING).push().setValue(qa8);
     }
 }

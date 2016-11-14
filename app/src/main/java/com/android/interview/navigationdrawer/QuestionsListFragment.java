@@ -19,7 +19,9 @@ import android.widget.Toast;
 import com.android.interview.AddQuestionActivity;
 import com.android.interview.BaseActivity;
 import com.android.interview.FirebaseUtils;
+import com.android.interview.MainActivity;
 import com.android.interview.PagerAdapter;
+import com.android.interview.QuestionDetailActivity;
 import com.android.interview.R;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.android.interview.model.QA;
@@ -96,7 +98,11 @@ public class QuestionsListFragment extends Fragment implements FABAction {
             @Override
             public void onItemClick(int position, View v) {
                 String key = mQLAdapter.getRef(position).getKey();
-                mCallback.onQuestionSelected(key);
+               // mCallback.onQuestionSelected(key);
+                Intent intent = new Intent(getActivity(), QuestionDetailActivity.class);
+                intent.putExtra("key", key);
+                intent.putExtra("category", category);
+                startActivity(intent);
             }
 
             @Override
