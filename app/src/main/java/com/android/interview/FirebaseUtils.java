@@ -23,10 +23,18 @@ public class FirebaseUtils {
     public static User getUser() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            return new User(user.getDisplayName(), user.getEmail(), user.getUid());
+            return new User(user.getUid(), user.getDisplayName(), user.getEmail());
         }
         return null;
     }
+
+    /*
+    public void writeNewUser(String userId, String name, String email) {
+        User user = new User(name, email);
+
+        FirebaseUtils.getUsersRef().child(userId).setValue(user);
+    }
+    */
 
     public static DatabaseReference getAdminsRef() {
         return getBaseRef().child("administrators");

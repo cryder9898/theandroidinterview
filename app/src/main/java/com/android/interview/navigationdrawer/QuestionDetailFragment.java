@@ -26,7 +26,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 
-import static com.android.interview.BaseActivity.getListType;
 import static com.android.interview.MainActivity.UNDER_REVIEW;
 
 public class QuestionDetailFragment extends Fragment implements FABAction {
@@ -43,7 +42,7 @@ public class QuestionDetailFragment extends Fragment implements FABAction {
 
     private AdView mAdView;
     private DatabaseReference ref;
-    private ValueEventListener mValueEventListener;
+    private ValueEventListener detailsListener;
 
     public QuestionDetailFragment (){}
 
@@ -71,7 +70,7 @@ public class QuestionDetailFragment extends Fragment implements FABAction {
         url = (TextView) rootView.findViewById(R.id.url_detail_tv);
         timestamp = (TextView) rootView.findViewById(R.id.timestamp_detail_tv);
         ref = FirebaseUtils.getBaseRef().child(BaseActivity.getListType()).child(mKey);
-        mValueEventListener = new ValueEventListener() {
+        detailsListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 QA qa = dataSnapshot.getValue(QA.class);
@@ -85,10 +84,10 @@ public class QuestionDetailFragment extends Fragment implements FABAction {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.w(TAG, "details:onCancelled", databaseError.toException());
             }
         };
-        ref.addValueEventListener(mValueEventListener);
+        ref.addValueEventListener(detailsListener);
 
         return rootView;
     }
@@ -114,7 +113,7 @@ public class QuestionDetailFragment extends Fragment implements FABAction {
         if (mAdView != null) {
             mAdView.destroy();
         }
-        ref.removeEventListener(mValueEventListener);
+        ref.removeEventListener(detailsListener);
         super.onDestroyView();
     }
 

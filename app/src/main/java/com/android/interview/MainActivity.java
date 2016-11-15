@@ -17,10 +17,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.android.interview.model.TestQuestions;
 import com.android.interview.model.User;
 import com.android.interview.navigationdrawer.AboutActivity;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.disklrucache.DiskLruCache;
 import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.ConnectionResult;
@@ -66,7 +66,6 @@ public class MainActivity extends BaseActivity implements
     private FirebaseAnalytics mFirebaseAnalytics;
     private DatabaseReference mFirebaseDatabase;
     private ValueEventListener adminListener;
-    private ValueEventListener userListener;
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -113,11 +112,13 @@ public class MainActivity extends BaseActivity implements
             finish();
             return;
         }
-        //TestQuestions.loadPublished();
-        //TestQuestions.loadReviews();
+        TestQuestions.loadPublished();
+        TestQuestions.loadReviews();
 
         //initializes Drawer header
         initNavHeader();
+
+        //FirebaseUtils.getAdminsRef().push().setValue(new User(mFirebaseUser.getUid(),mFirebaseUser.getDisplayName(),mFirebaseUser.getEmail()));
 
         // check to see if user is administrator and set admin
         adminListener = new ValueEventListener() {
@@ -125,8 +126,8 @@ public class MainActivity extends BaseActivity implements
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.hasChildren()) {
                     for (DataSnapshot child: dataSnapshot.getChildren()) {
-                        User user = child.getValue(User.class);
-                        if (user.getUid().equals(mFirebaseUser.getUid())) {
+                        User admins = child.getValue(User.class);
+                        if (admins.getUid().equals(mFirebaseUser.getUid())) {
                             setAdmin(true);
                             MenuItem menuItem = mNavigationView.getMenu().findItem(R.id.admin_menu);
                             menuItem.setVisible(true);
@@ -141,36 +142,6 @@ public class MainActivity extends BaseActivity implements
             }
         };
         FirebaseUtils.getAdminsRef().addValueEventListener(adminListener);
-
-        // check for user and add to users if not in database
-        userListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                boolean inDB = false;
-                if (dataSnapshot.hasChildren()) {
-                    for (DataSnapshot child: dataSnapshot.getChildren()) {
-                        User user = child.getValue(User.class);
-                        if (user.getUid().equals(mFirebaseUser.getUid())) {
-                            inDB = true;
-                        }
-                    }
-                } else {
-                    FirebaseUtils.getUsersRef().push()
-                            .setValue(FirebaseUtils.getUser());
-                    inDB = true;
-                }
-                if (!inDB) {
-                    FirebaseUtils.getUsersRef().push()
-                            .setValue(FirebaseUtils.getUser());
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
-        FirebaseUtils.getUsersRef().addValueEventListener(userListener);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)

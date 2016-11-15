@@ -5,6 +5,7 @@ import com.google.firebase.database.IgnoreExtraProperties;
 import com.google.firebase.database.ServerValue;
 
 import java.util.HashMap;
+import java.util.List;
 
 @IgnoreExtraProperties
 public class QA {
@@ -16,15 +17,16 @@ public class QA {
     private String username;
     private String uid;
     private HashMap<String, Object> timestampLastChanged;
+    private List<Boolean> categories;
 
     public QA(){}
 
-    public QA(String question, String answer, String url, String uid) {
+    public QA(String uid, String question, String answer, String url) {
+        this.uid = uid;
         this.question = question;
         this.answer = answer;
         this.url = url;
-        this.uid = uid;
-        favorite = false;
+        this.favorite = false;
         HashMap<String, Object> timestampNowObject = new HashMap<String, Object>();
         timestampNowObject.put("timestamp", ServerValue.TIMESTAMP);
         this.timestampLastChanged = timestampNowObject;
@@ -34,24 +36,12 @@ public class QA {
         return username;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
     public String getUrl() {
         return this.url;
     }
 
     public String getUid() {
         return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
     }
 
     public boolean getFavorite() {
@@ -68,10 +58,6 @@ public class QA {
 
     public String getQuestion() {
         return question;
-    }
-
-    public void setAnswer(String ans) {
-        answer = ans;
     }
 
     public String getAnswer() {

@@ -2,6 +2,7 @@ package com.android.interview;
 
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -13,9 +14,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
-
-import java.sql.Date;
-import java.text.SimpleDateFormat;
 
 public class EditQuestionActivity extends BaseActivity {
 
@@ -29,7 +27,7 @@ public class EditQuestionActivity extends BaseActivity {
     private String mKey;
 
     private DatabaseReference mRef;
-    private ValueEventListener valueEventListener;
+    private ValueEventListener detailsListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +45,7 @@ public class EditQuestionActivity extends BaseActivity {
 
         mKey = getIntent().getStringExtra("key");
 
-        valueEventListener = new ValueEventListener() {
+        detailsListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 QA qa = dataSnapshot.getValue(QA.class);
@@ -58,11 +56,11 @@ public class EditQuestionActivity extends BaseActivity {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.w(TAG, "details:onCancelled", databaseError.toException());
             }
         };
         mRef = FirebaseUtils.getBaseRef().child(BaseActivity.getListType()).child(mKey);
-        mRef.addListenerForSingleValueEvent(valueEventListener);
+        mRef.addListenerForSingleValueEvent(detailsListener);
     }
 
     @Override
@@ -93,7 +91,7 @@ public class EditQuestionActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
-        mRef.removeEventListener(valueEventListener);
+        mRef.removeEventListener(detailsListener);
         super.onDestroy();
     }
 }
