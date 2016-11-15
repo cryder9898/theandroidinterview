@@ -51,24 +51,24 @@ public class TestQuestions {
                     " }    \n" +
                     "  \n" +
                     "}}  \n\n" +
-                    "Using recursion" +
-                    "class FibonacciExample2{  \n" +
-                    " static int n1=0,n2=1,n3=0;    \n" +
-                    " static void printFibonacci(int count){    \n" +
-                    "    if(count>0){    \n" +
-                    "         n3 = n1 + n2;    \n" +
-                    "         n1 = n2;    \n" +
-                    "         n2 = n3;    \n" +
-                    "         System.out.print(\" \"+n3);   \n" +
-                    "         printFibonacci(count-1);    \n" +
-                    "     }    \n" +
-                    " }    \n" +
-                    " public static void main(String args[]){    \n" +
-                    "  int count=10;    \n" +
-                    "  System.out.print(n1+\" \"+n2);//printing 0 and 1    \n" +
-                    "  printFibonacci(count-2);//n-2 because 2 numbers are already printed   \n" +
-                    " }  \n" +
-                    "}  ",
+            "Using recursion" +
+                    "public class Solution {\n" +
+                    "\n" +
+                    "    \n" +
+                    "    public static int fibonacci(int n) {\n" +
+                    "        if (n==0) {return 0;}\n" +
+                    "        if (n==1) {return 1;}\n" +
+                    "        return fibonacci(n-1) + fibonacci(n-2);\n" +
+                    "    }\n" +
+                    "    \n" +
+                    "\n" +
+                    "    public static void main(String[] args) {\n" +
+                    "        Scanner scanner = new Scanner(System.in);\n" +
+                    "        int n = scanner.nextInt();\n" +
+                    "        scanner.close();\n" +
+                    "        System.out.println(fibonacci(n));\n" +
+                    "    }\n" +
+                    "}",
             "http://www.javatpoint.com/fibonacci-series-in-java");
 
     public static QA qa4 = new QA(FirebaseUtils.getCurrentUserId(),
